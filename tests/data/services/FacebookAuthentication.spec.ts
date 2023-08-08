@@ -6,56 +6,53 @@ import type { CreateUserAccountFromFacebookRepository, LoadUserAccountRepository
 
 type Sut = {
   sut: FacebookAuthenticationService
-  loadFacebookUser: MockProxy<LoadFacebookUser>
-  loadUserAccountRepository: MockProxy<LoadUserAccountRepository>
-  createUserAccountFromFacebookRepository: MockProxy<CreateUserAccountFromFacebookRepository>
+  facebookApi: MockProxy<LoadFacebookUser>
+  userAccountRepository: MockProxy<LoadUserAccountRepository & CreateUserAccountFromFacebookRepository>
 }
 
 const makeSut = (): Sut => {
-  const loadFacebookUser = mock<LoadFacebookUser>()
-  const loadUserAccountRepository = mock<LoadUserAccountRepository>()
-  const createUserAccountFromFacebookRepository = mock<CreateUserAccountFromFacebookRepository>()
-  loadFacebookUser.loadUser.mockResolvedValue({ name: 'Any Name', email: 'any@email.com', facebookId: 'any_id' })
-  const sut = new FacebookAuthenticationService(loadFacebookUser, loadUserAccountRepository, createUserAccountFromFacebookRepository)
+  const facebookApi = mock<LoadFacebookUser>()
+  const userAccountRepository = mock<LoadUserAccountRepository & CreateUserAccountFromFacebookRepository>()
+  facebookApi.loadUser.mockResolvedValue({ name: 'Any Name', email: 'any@email.com', facebookId: 'any_id' })
+  const sut = new FacebookAuthenticationService(facebookApi, userAccountRepository)
   return {
     sut,
-    loadFacebookUser,
-    loadUserAccountRepository,
-    createUserAccountFromFacebookRepository
+    facebookApi,
+    userAccountRepository
   }
 }
 
 describe('Facebook Authentication Service', () => {
   test('Should call LoadFacebookUser with correct params', async () => {
-    const { sut, loadFacebookUser } = makeSut()
+    const { sut, facebookApi } = makeSut()
     await sut.auth({ token: 'any_token' })
-    expect(loadFacebookUser.loadUser).toHaveBeenCalledWith({ token: 'any_token' })
-    expect(loadFacebookUser.loadUser).toHaveBeenCalledTimes(1)
+    expect(facebookApi.loadUser).toHaveBeenCalledWith({ token: 'any_token' })
+    expect(facebookApi.loadUser).toHaveBeenCalledTimes(1)
   })
 
   test('Should return AuthenticationError when LoadFacebookUser returns undefined', async () => {
-    const { sut, loadFacebookUser } = makeSut()
-    loadFacebookUser.loadUser.mockResolvedValueOnce(undefined)
+    const { sut, facebookApi } = makeSut()
+    facebookApi.loadUser.mockResolvedValueOnce(undefined)
     const authResult = await sut.auth({ token: 'any_token' })
     expect(authResult).toEqual(new AuthenticationError())
   })
 
   test('Should call LoadUserAccountRepository on LoadFacebookUser success', async () => {
-    const { sut, loadUserAccountRepository } = makeSut()
+    const { sut, userAccountRepository } = makeSut()
     await sut.auth({ token: 'any_token' })
-    expect(loadUserAccountRepository.load).toHaveBeenCalledWith({ email: 'any@email.com' })
-    expect(loadUserAccountRepository.load).toHaveBeenCalledTimes(1)
+    expect(userAccountRepository.load).toHaveBeenCalledWith({ email: 'any@email.com' })
+    expect(userAccountRepository.load).toHaveBeenCalledTimes(1)
   })
 
-  test('Should call CreateUserAccountRepository when LoadUserAccountRepository returns undefined', async () => {
-    const { sut, loadUserAccountRepository, createUserAccountFromFacebookRepository } = makeSut()
-    loadUserAccountRepository.load.mockResolvedValueOnce(undefined)
+  test('Should call CreateUserAccountFromFacebookRepository when LoadUserAccountRepository returns undefined', async () => {
+    const { sut, userAccountRepository } = makeSut()
+    userAccountRepository.load.mockResolvedValueOnce(undefined)
     await sut.auth({ token: 'any_token' })
-    expect(createUserAccountFromFacebookRepository.createFromFacebook).toHaveBeenCalledWith({
+    expect(userAccountRepository.createFromFacebook).toHaveBeenCalledWith({
       name: 'Any Name',
       email: 'any@email.com',
       facebookId: 'any_id'
     })
-    expect(createUserAccountFromFacebookRepository.createFromFacebook).toHaveBeenCalledTimes(1)
+    expect(userAccountRepository.createFromFacebook).toHaveBeenCalledTimes(1)
   })
 })
