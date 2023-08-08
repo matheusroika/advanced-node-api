@@ -1,33 +1,34 @@
+import { mock } from 'jest-mock-extended'
 import { FacebookAuthenticationService } from '@/data/services'
 import { AuthenticationError } from '@/domain/errors'
-import { mockLoadFacebookUser } from '@/tests/data/mocks/mockLoadFacebookUser'
 import type { LoadFacebookUser } from '@/data/contracts/apis'
+import type { _MockProxy } from 'jest-mock-extended/lib/Mock'
 
 type Sut = {
   sut: FacebookAuthenticationService
-  loadFacebookUserStub: LoadFacebookUser
+  loadFacebookUser: _MockProxy<LoadFacebookUser> & LoadFacebookUser
 }
 
 const makeSut = (): Sut => {
-  const loadFacebookUserStub = mockLoadFacebookUser()
-  const sut = new FacebookAuthenticationService(loadFacebookUserStub)
+  const loadFacebookUser = mock<LoadFacebookUser>()
+  const sut = new FacebookAuthenticationService(loadFacebookUser)
   return {
     sut,
-    loadFacebookUserStub
+    loadFacebookUser
   }
 }
 
 describe('Facebook Authentication Service', () => {
   test('Should call LoadFacebookUser with correct params', async () => {
-    const { sut, loadFacebookUserStub } = makeSut()
-    const loadUserSpy = jest.spyOn(loadFacebookUserStub, 'loadUser')
+    const { sut, loadFacebookUser } = makeSut()
     await sut.auth({ token: 'any_token' })
-    expect(loadUserSpy).toHaveBeenCalledWith({ token: 'any_token' })
+    expect(loadFacebookUser.loadUser).toHaveBeenCalledWith({ token: 'any_token' })
+    expect(loadFacebookUser.loadUser).toHaveBeenCalledTimes(1)
   })
 
   test('Should return AuthenticationError when LoadFacebookUser returns undefined', async () => {
-    const { sut, loadFacebookUserStub } = makeSut()
-    jest.spyOn(loadFacebookUserStub, 'loadUser').mockResolvedValueOnce(undefined)
+    const { sut, loadFacebookUser } = makeSut()
+    loadFacebookUser.loadUser.mockResolvedValueOnce(undefined)
     const authResult = await sut.auth({ token: 'any_token' })
     expect(authResult).toEqual(new AuthenticationError())
   })
