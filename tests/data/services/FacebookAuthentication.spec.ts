@@ -1,4 +1,6 @@
 import { mock, type MockProxy } from 'jest-mock-extended'
+import { mocked } from 'jest-mock'
+import { FacebookAccount } from '@/domain/models'
 import { FacebookAuthenticationService } from '@/data/services'
 import { AuthenticationError } from '@/domain/errors'
 import type { LoadFacebookUser } from '@/data/contracts/apis'
@@ -23,6 +25,8 @@ const makeSut = (): Sut => {
   }
 }
 
+jest.mock('@/domain/models/FacebookAccount')
+
 describe('Facebook Authentication Service', () => {
   test('Should call LoadFacebookUser with correct params', async () => {
     const { sut, facebookApi } = makeSut()
@@ -45,40 +49,12 @@ describe('Facebook Authentication Service', () => {
     expect(userAccountRepository.load).toHaveBeenCalledTimes(1)
   })
 
-  test('Should create user account when LoadUserAccountRepository returns undefined', async () => {
-    const { sut, userAccountRepository } = makeSut()
-    userAccountRepository.load.mockResolvedValueOnce(undefined)
-    await sut.auth({ token: 'any_token' })
-    expect(userAccountRepository.saveWithFacebook).toHaveBeenCalledWith({
-      name: 'Facebook Name',
-      email: 'any@email.com',
-      facebookId: 'any_fb_id'
-    })
-    expect(userAccountRepository.saveWithFacebook).toHaveBeenCalledTimes(1)
-  })
-
-  test('Should update only Facebook ID on LoadUserAccountRepository success', async () => {
+  test('Should call SaveFacebookUserAccountRepository with a FacebookAccount instance', async () => {
+    const FacebookAccountStub = jest.fn().mockImplementation(() => ({ any: 'any' }))
+    mocked(FacebookAccount).mockImplementation(FacebookAccountStub)
     const { sut, userAccountRepository } = makeSut()
     await sut.auth({ token: 'any_token' })
-    expect(userAccountRepository.saveWithFacebook).toHaveBeenCalledWith({
-      id: 'any_id',
-      name: 'Any Name',
-      email: 'any@email.com',
-      facebookId: 'any_fb_id'
-    })
-    expect(userAccountRepository.saveWithFacebook).toHaveBeenCalledTimes(1)
-  })
-
-  test('Should update user account name with the one received from Facebook API if account does not have name', async () => {
-    const { sut, userAccountRepository } = makeSut()
-    userAccountRepository.load.mockResolvedValue({ id: 'any_id' })
-    await sut.auth({ token: 'any_token' })
-    expect(userAccountRepository.saveWithFacebook).toHaveBeenCalledWith({
-      id: 'any_id',
-      name: 'Facebook Name',
-      email: 'any@email.com',
-      facebookId: 'any_fb_id'
-    })
+    expect(userAccountRepository.saveWithFacebook).toHaveBeenCalledWith({ any: 'any' })
     expect(userAccountRepository.saveWithFacebook).toHaveBeenCalledTimes(1)
   })
 })
