@@ -13,7 +13,7 @@ type Sut = {
 const makeSut = (): Sut => {
   const facebookApi = mock<LoadFacebookUser>()
   const userAccountRepository = mock<LoadUserAccountRepository & CreateUserAccountFromFacebookRepository & UpdateUserAccountWithFacebookRepository>()
-  facebookApi.loadUser.mockResolvedValue({ name: 'Any Name', email: 'any@email.com', facebookId: 'any_fb_id' })
+  facebookApi.loadUser.mockResolvedValue({ name: 'Facebook Name', email: 'any@email.com', facebookId: 'any_fb_id' })
   userAccountRepository.load.mockResolvedValue({ id: 'any_id', name: 'Any Name' })
   const sut = new FacebookAuthenticationService(facebookApi, userAccountRepository)
   return {
@@ -50,7 +50,7 @@ describe('Facebook Authentication Service', () => {
     userAccountRepository.load.mockResolvedValueOnce(undefined)
     await sut.auth({ token: 'any_token' })
     expect(userAccountRepository.createFromFacebook).toHaveBeenCalledWith({
-      name: 'Any Name',
+      name: 'Facebook Name',
       email: 'any@email.com',
       facebookId: 'any_fb_id'
     })
@@ -63,6 +63,18 @@ describe('Facebook Authentication Service', () => {
     expect(userAccountRepository.updateWithFacebook).toHaveBeenCalledWith({
       id: 'any_id',
       name: 'Any Name',
+      facebookId: 'any_fb_id'
+    })
+    expect(userAccountRepository.updateWithFacebook).toHaveBeenCalledTimes(1)
+  })
+
+  test('Should update user account name with the one received from Facebook API if account does not have name', async () => {
+    const { sut, userAccountRepository } = makeSut()
+    userAccountRepository.load.mockResolvedValue({ id: 'any_id' })
+    await sut.auth({ token: 'any_token' })
+    expect(userAccountRepository.updateWithFacebook).toHaveBeenCalledWith({
+      id: 'any_id',
+      name: 'Facebook Name',
       facebookId: 'any_fb_id'
     })
     expect(userAccountRepository.updateWithFacebook).toHaveBeenCalledTimes(1)
