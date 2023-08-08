@@ -2,23 +2,26 @@ import { mock, type MockProxy } from 'jest-mock-extended'
 import { FacebookAuthenticationService } from '@/data/services'
 import { AuthenticationError } from '@/domain/errors'
 import type { LoadFacebookUser } from '@/data/contracts/apis'
-import type { LoadUserAccountRepository } from '@/data/contracts/repositories'
+import type { CreateUserAccountFromFacebookRepository, LoadUserAccountRepository } from '@/data/contracts/repositories'
 
 type Sut = {
   sut: FacebookAuthenticationService
   loadFacebookUser: MockProxy<LoadFacebookUser>
   loadUserAccountRepository: MockProxy<LoadUserAccountRepository>
+  createUserAccountFromFacebookRepository: MockProxy<CreateUserAccountFromFacebookRepository>
 }
 
 const makeSut = (): Sut => {
   const loadFacebookUser = mock<LoadFacebookUser>()
   const loadUserAccountRepository = mock<LoadUserAccountRepository>()
+  const createUserAccountFromFacebookRepository = mock<CreateUserAccountFromFacebookRepository>()
   loadFacebookUser.loadUser.mockResolvedValue({ name: 'Any Name', email: 'any@email.com', facebookId: 'any_id' })
-  const sut = new FacebookAuthenticationService(loadFacebookUser, loadUserAccountRepository)
+  const sut = new FacebookAuthenticationService(loadFacebookUser, loadUserAccountRepository, createUserAccountFromFacebookRepository)
   return {
     sut,
     loadFacebookUser,
-    loadUserAccountRepository
+    loadUserAccountRepository,
+    createUserAccountFromFacebookRepository
   }
 }
 
@@ -42,5 +45,17 @@ describe('Facebook Authentication Service', () => {
     await sut.auth({ token: 'any_token' })
     expect(loadUserAccountRepository.load).toHaveBeenCalledWith({ email: 'any@email.com' })
     expect(loadUserAccountRepository.load).toHaveBeenCalledTimes(1)
+  })
+
+  test('Should call CreateUserAccountRepository when LoadUserAccountRepository returns undefined', async () => {
+    const { sut, loadUserAccountRepository, createUserAccountFromFacebookRepository } = makeSut()
+    loadUserAccountRepository.load.mockResolvedValueOnce(undefined)
+    await sut.auth({ token: 'any_token' })
+    expect(createUserAccountFromFacebookRepository.createFromFacebook).toHaveBeenCalledWith({
+      name: 'Any Name',
+      email: 'any@email.com',
+      facebookId: 'any_id'
+    })
+    expect(createUserAccountFromFacebookRepository.createFromFacebook).toHaveBeenCalledTimes(1)
   })
 })
