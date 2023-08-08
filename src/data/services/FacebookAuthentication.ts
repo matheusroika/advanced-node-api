@@ -1,6 +1,6 @@
-import { type LoadFacebookUser } from '@/tests/data/services/FacebookAuthentication.spec'
-import type { FacebookAuthentication } from '@/domain/features'
 import { AuthenticationError } from '@/domain/errors'
+import type { FacebookAuthentication } from '@/domain/features'
+import type { LoadFacebookUser } from '@/data/contracts/apis'
 
 export class FacebookAuthenticationService implements FacebookAuthentication {
   constructor (

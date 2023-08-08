@@ -1,29 +1,11 @@
 import { FacebookAuthenticationService } from '@/data/services'
 import { AuthenticationError } from '@/domain/errors'
+import { mockLoadFacebookUser } from '@/tests/data/mocks/mockLoadFacebookUser'
+import type { LoadFacebookUser } from '@/data/contracts/apis'
 
 type Sut = {
   sut: FacebookAuthenticationService
   loadFacebookUserStub: LoadFacebookUser
-}
-
-export interface LoadFacebookUser {
-  loadUser: (params: LoadFacebookUser.Params) => Promise<LoadFacebookUser.Result>
-}
-
-namespace LoadFacebookUser {
-  export type Params = {
-    token: string
-  }
-  export type Result = undefined
-}
-
-const mockLoadFacebookUser = (): LoadFacebookUser => {
-  class LoadFacebookUserStub implements LoadFacebookUser {
-    async loadUser (params: LoadFacebookUser.Params): Promise<LoadFacebookUser.Result> {
-      return undefined
-    }
-  }
-  return new LoadFacebookUserStub()
 }
 
 const makeSut = (): Sut => {
