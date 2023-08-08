@@ -1,18 +1,24 @@
 import { FacebookAccount } from '@/domain/models'
+import { mockAccountData, mockFacebookData } from '../mocks/mockFacebookAccount'
 
 describe('Facebook Account Model', () => {
   test('Should create instance using only FacebookData', () => {
-    const sut = new FacebookAccount({ name: 'Facebook Name', email: 'any@email.com', facebookId: 'any_fb_id' })
-    expect(sut).toEqual({ name: 'Facebook Name', email: 'any@email.com', facebookId: 'any_fb_id' })
+    const facebookData = mockFacebookData()
+    const sut = new FacebookAccount(facebookData)
+    expect(sut).toEqual(facebookData)
   })
 
   test('Should update name if accountData.name is null', () => {
-    const sut = new FacebookAccount({ name: 'Facebook Name', email: 'any@email.com', facebookId: 'any_fb_id' }, { id: 'any_id' })
-    expect(sut).toEqual({ id: 'any_id', name: 'Facebook Name', email: 'any@email.com', facebookId: 'any_fb_id' })
+    const facebookData = mockFacebookData()
+    const accountData = mockAccountData()
+    const sut = new FacebookAccount(facebookData, accountData)
+    expect(sut).toEqual({ ...facebookData, ...accountData })
   })
 
   test('Should not update name if accountData.name is truthy', () => {
-    const sut = new FacebookAccount({ name: 'Facebook Name', email: 'any@email.com', facebookId: 'any_fb_id' }, { id: 'any_id', name: 'Any Name' })
-    expect(sut).toEqual({ id: 'any_id', name: 'Any Name', email: 'any@email.com', facebookId: 'any_fb_id' })
+    const facebookData = mockFacebookData()
+    const accountData = mockAccountData({ withName: true })
+    const sut = new FacebookAccount(facebookData, accountData)
+    expect(sut).toEqual({ ...facebookData, ...accountData })
   })
 })
