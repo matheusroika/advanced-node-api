@@ -1,12 +1,11 @@
-import { mock } from 'jest-mock-extended'
+import { mock, type MockProxy } from 'jest-mock-extended'
 import { FacebookAuthenticationService } from '@/data/services'
 import { AuthenticationError } from '@/domain/errors'
 import type { LoadFacebookUser } from '@/data/contracts/apis'
-import type { _MockProxy } from 'jest-mock-extended/lib/Mock'
 
 type Sut = {
   sut: FacebookAuthenticationService
-  loadFacebookUser: _MockProxy<LoadFacebookUser> & LoadFacebookUser
+  loadFacebookUser: MockProxy<LoadFacebookUser>
 }
 
 const makeSut = (): Sut => {
