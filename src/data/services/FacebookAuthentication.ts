@@ -20,7 +20,7 @@ export class FacebookAuthenticationService implements FacebookAuthentication {
     }
     await this.userAccountRepository.updateWithFacebook({
       id: userAccount.id,
-      name: userAccount.name ?? '',
+      name: userAccount.name ?? fbUser.name,
       facebookId: fbUser.facebookId
     })
     return ''
