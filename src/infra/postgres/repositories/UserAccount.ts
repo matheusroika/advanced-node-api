@@ -17,7 +17,8 @@ export class PostgresUserAccountRepository implements LoadUserAccountRepository,
     if (!id) {
       const postgresUser = await PostgresUser.save({ email, name, facebookId })
       return { id: postgresUser.id.toString() }
-    } else await PostgresUser.update({ id: Number(id) }, { name, facebookId })
-    return { id: '' }
+    }
+    await PostgresUser.update({ id: Number(id) }, { name, facebookId })
+    return { id }
   }
 }
