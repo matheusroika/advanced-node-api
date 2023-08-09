@@ -57,5 +57,13 @@ describe('Postgres User Account Repository', () => {
       const postgresUser = await PostgresUser.findOne({ where: { email: 'any@email.com' } })
       expect(postgresUser?.id).toBe(1)
     })
+
+    test('Should update account if id is valid', async () => {
+      await PostgresUser.save({ email: 'any@email.com', name: 'Facebook Name', facebookId: 'any_fb_id' })
+      const { sut } = makeSut()
+      await sut.saveWithFacebook({ id: '1', email: 'other@email.com', name: 'Other Name', facebookId: 'other_fb_id' })
+      const postgresUser = await PostgresUser.findOne({ where: { id: 1 } })
+      expect(postgresUser).toEqual({ id: 1, email: 'any@email.com', name: 'Other Name', facebookId: 'other_fb_id' })
+    })
   })
 })
