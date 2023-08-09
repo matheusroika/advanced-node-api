@@ -1,4 +1,4 @@
-import { FacebookAccount } from '@/domain/models'
+import { AccessToken, FacebookAccount } from '@/domain/models'
 import { AuthenticationError } from '@/domain/errors'
 import type { FacebookAuthentication } from '@/domain/features'
 import type { LoadFacebookUser } from '@/data/contracts/apis'
@@ -20,6 +20,6 @@ export class FacebookAuthenticationService implements FacebookAuthentication {
     const facebookAccount = new FacebookAccount(facebookData, userData)
     const { id } = await this.userAccountRepository.saveWithFacebook(facebookAccount)
     await this.crypto.generateToken({ key: id })
-    return ''
+    return new AccessToken('')
   }
 }
