@@ -1,5 +1,5 @@
 export class AccessToken {
-  constructor (private readonly value: string) {}
+  constructor (readonly value: string) {}
 
   static get validTimeInMs (): number {
     // 30 minutes
