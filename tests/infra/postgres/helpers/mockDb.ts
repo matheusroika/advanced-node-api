@@ -1,6 +1,6 @@
 import { type IMemoryDb, newDb } from 'pg-mem'
 import type { DataSource } from 'typeorm'
-import { fixPgMem } from './fixPgMem'
+import { fixPgMem } from '.'
 
 type MockDb = {
   db: IMemoryDb

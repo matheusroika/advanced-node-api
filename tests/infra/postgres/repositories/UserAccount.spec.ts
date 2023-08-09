@@ -2,7 +2,7 @@ import { type IBackup, type IMemoryDb } from 'pg-mem'
 import type { DataSource } from 'typeorm'
 import { PostgresUserAccountRepository } from '@/infra/postgres/repositories'
 import { PostgresUser } from '@/infra/postgres/entities'
-import { mockDb } from '@/tests/infra/postgres/helpers/mockDb'
+import { mockDb } from '@/tests/infra/postgres/helpers'
 
 type Sut = {
   sut: PostgresUserAccountRepository
