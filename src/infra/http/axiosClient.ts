@@ -2,8 +2,9 @@ import axios from 'axios'
 import type { HttpGetClient } from '@/infra/http'
 
 export class AxiosHttpClient {
-  async get (args: HttpGetClient.Params): Promise<void> {
+  async get <Result = any> (args: HttpGetClient.Params): Promise<Result> {
     const { url, params } = args
-    await axios.get(url, { params })
+    const result = await axios.get(url, { params })
+    return result.data
   }
 }
