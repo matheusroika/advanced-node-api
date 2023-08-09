@@ -1,5 +1,5 @@
 import type { LoadFacebookUser } from '@/data/contracts/apis'
-import type { HttpGetClient } from './facebook.spec'
+import type { HttpGetClient } from '@/infra/http'
 
 export class FacebookApi {
   private readonly baseUrl = 'https://graph.facebook.com'
