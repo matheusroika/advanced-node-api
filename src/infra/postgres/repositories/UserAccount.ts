@@ -14,8 +14,10 @@ export class PostgresUserAccountRepository implements LoadUserAccountRepository,
 
   async saveWithFacebook (params: SaveFacebookUserAccountRepository.Params): Promise<SaveFacebookUserAccountRepository.Result> {
     const { id, email, name, facebookId } = params
-    if (!id) await PostgresUser.save({ email, name, facebookId })
-    else await PostgresUser.update({ id: Number(id) }, { name, facebookId })
+    if (!id) {
+      const postgresUser = await PostgresUser.save({ email, name, facebookId })
+      return { id: postgresUser.id.toString() }
+    } else await PostgresUser.update({ id: Number(id) }, { name, facebookId })
     return { id: '' }
   }
 }
