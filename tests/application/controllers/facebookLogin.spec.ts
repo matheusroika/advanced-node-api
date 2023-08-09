@@ -14,25 +14,41 @@ class FacebookLoginController {
   ) {}
 
   async handle (httpRequest: any): Promise<HttpResponse> {
-    if (!httpRequest.token) {
+    try {
+      if (!httpRequest.token) {
+        return {
+          statusCode: 400,
+          data: new Error('The "token" field is required')
+        }
+      }
+
+      const authResult = await this.facebookAuth.auth({ token: httpRequest.token })
+      if (authResult instanceof AuthenticationError) {
+        return {
+          statusCode: 401,
+          data: new AuthenticationError()
+        }
+      }
+
       return {
-        statusCode: 400,
-        data: new Error('The "token" field is required')
+        statusCode: 200,
+        data: { accessToken: authResult.value }
+      }
+    } catch (error) {
+      const typedError = error as Error
+      return {
+        statusCode: 500,
+        data: new ServerError(typedError)
       }
     }
+  }
+}
 
-    const authResult = await this.facebookAuth.auth({ token: httpRequest.token })
-    if (authResult instanceof AuthenticationError) {
-      return {
-        statusCode: 401,
-        data: new AuthenticationError()
-      }
-    }
-
-    return {
-      statusCode: 200,
-      data: { accessToken: authResult.value }
-    }
+class ServerError extends Error {
+  constructor (error?: Error) {
+    super('Unexpected Server Error. Try again.')
+    this.name = ('ServerError')
+    this.stack = error?.stack
   }
 }
 
@@ -102,6 +118,17 @@ describe('Facebook Login Controller', () => {
     expect(httpResponse).toEqual({
       statusCode: 200,
       data: { accessToken: 'any_value' }
+    })
+  })
+
+  test('Should return 500 if FacebookAuthentication fails', async () => {
+    const { sut, facebookAuth } = makeSut()
+    const error = new Error('Infra Error')
+    facebookAuth.auth.mockRejectedValueOnce(error)
+    const httpResponse = await sut.handle({ token: 'any_token' })
+    expect(httpResponse).toEqual({
+      statusCode: 500,
+      data: new ServerError(error)
     })
   })
 })
