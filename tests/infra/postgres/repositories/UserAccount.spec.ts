@@ -53,9 +53,10 @@ describe('Postgres User Account Repository', () => {
   describe('SaveWithFacebook', () => {
     test('Should create an account if id is undefined', async () => {
       const { sut } = makeSut()
-      await sut.saveWithFacebook({ email: 'any@email.com', name: 'Facebook Name', facebookId: 'any_fb_id' })
+      const { id } = await sut.saveWithFacebook({ email: 'any@email.com', name: 'Facebook Name', facebookId: 'any_fb_id' })
       const postgresUser = await PostgresUser.findOne({ where: { email: 'any@email.com' } })
       expect(postgresUser?.id).toBe(1)
+      expect(id).toBe('1')
     })
 
     test('Should update account if id is valid', async () => {
