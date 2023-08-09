@@ -5,7 +5,7 @@ export class PostgresUserAccountRepository implements LoadUserAccountRepository 
   async load (params: LoadUserAccountRepository.Params): Promise<LoadUserAccountRepository.Result> {
     const { email } = params
     const user = await PostgresUser.findOne({ where: { email } })
-    if (!user) return undefined
+    if (!user) return
     return {
       id: user.id.toString(),
       name: user.name ?? undefined
