@@ -40,14 +40,20 @@ describe('Postgres User Account Repository', () => {
     }) as DataSource
     await dataSource.initialize()
     await dataSource.synchronize()
-    await PostgresUser.save({ email: 'existing@email.com' })
   })
 
   describe('Load', () => {
     test('Should return an account if email exists', async () => {
       const { sut } = makeSut()
+      await PostgresUser.save({ email: 'existing@email.com' })
       const account = await sut.load({ email: 'existing@email.com' })
       expect(account).toEqual({ id: '1' })
+    })
+
+    test('Should return undefined if email does not exists', async () => {
+      const { sut } = makeSut()
+      const account = await sut.load({ email: 'new@email.com' })
+      expect(account).toBeUndefined()
     })
   })
 })
