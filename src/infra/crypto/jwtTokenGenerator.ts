@@ -4,9 +4,9 @@ import type { TokenGenerator } from '@/data/contracts/crypto'
 export class JwtTokenGenerator implements TokenGenerator {
   constructor (private readonly secret: string) {}
 
-  async generateToken (params: TokenGenerator.Params): Promise<string> {
+  async generateToken (params: TokenGenerator.Params): Promise<TokenGenerator.Result> {
     const { key, validTimeInMs } = params
-    jwt.sign({ key }, this.secret, { expiresIn: validTimeInMs })
-    return ''
+    const token = jwt.sign({ key }, this.secret, { expiresIn: validTimeInMs })
+    return token
   }
 }
