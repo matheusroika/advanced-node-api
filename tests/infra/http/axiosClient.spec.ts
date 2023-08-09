@@ -16,13 +16,13 @@ const makeSut = (): Sut => {
 
 describe('Axios Http Client', () => {
   describe('GET', () => {
+    const url = 'any_url'
+    const params = { any: 'any' }
+
     test('Should call axios.get with correct params', async () => {
       const { sut } = makeSut()
-      await sut.get({
-        url: 'any_url',
-        params: { any: 'any' }
-      })
-      expect(axios.get).toHaveBeenCalledWith('any_url', { params: { any: 'any' } })
+      await sut.get({ url, params })
+      expect(axios.get).toHaveBeenCalledWith(url, { params })
       expect(axios.get).toHaveBeenCalledTimes(1)
     })
   })
