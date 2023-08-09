@@ -1,7 +1,8 @@
-import { type IBackup, type IMemoryDb, newDb } from 'pg-mem'
-import { Entity, PrimaryGeneratedColumn, Column, type DataSource, BaseEntity } from 'typeorm'
+import { type IBackup, type IMemoryDb } from 'pg-mem'
+import type { DataSource } from 'typeorm'
 import { PostgresUserAccountRepository } from '@/infra/postgres/repositories'
-import { fixPgMem } from './helpers/fixPgMem'
+import { PostgresUser } from '@/infra/postgres/entities'
+import { mockDb } from './helpers/mockDb'
 
 type Sut = {
   sut: PostgresUserAccountRepository
@@ -14,49 +15,13 @@ const makeSut = (): Sut => {
   }
 }
 
-@Entity({ name: 'users' })
-export class PostgresUser extends BaseEntity {
-  @PrimaryGeneratedColumn()
-    id!: number
-
-  @Column({ nullable: true })
-    name?: string
-
-  @Column()
-    email!: string
-
-  @Column({ nullable: true })
-    facebookId?: string
-}
-
-type MockDb = {
-  db: IMemoryDb
-  dataSource: DataSource
-}
-const mockDb = async (entities: any[]): Promise<MockDb> => {
-  const db = newDb()
-  fixPgMem(db)
-
-  const dataSource = await db.adapters.createTypeormDataSource({
-    type: 'postgres',
-    entities: entities ?? ['src/infra/postgres/entities/index.ts']
-  })
-  await dataSource.initialize()
-  await dataSource.synchronize()
-
-  return {
-    db,
-    dataSource
-  }
-}
-
 describe('Postgres User Account Repository', () => {
   let dataSource: DataSource
   let db: IMemoryDb
   let backup: IBackup
 
   beforeAll(async () => {
-    const mockedDb = await mockDb([PostgresUser])
+    const mockedDb = await mockDb()
     db = mockedDb.db
     dataSource = mockedDb.dataSource
     backup = db.backup()

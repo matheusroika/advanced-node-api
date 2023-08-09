@@ -1,5 +1,5 @@
 import type { LoadUserAccountRepository } from '@/data/contracts/repositories'
-import { PostgresUser } from '@/tests/infra/repositories/postgres/UserAccount.spec'
+import { PostgresUser } from '@/infra/postgres/entities'
 
 export class PostgresUserAccountRepository implements LoadUserAccountRepository {
   async load (params: LoadUserAccountRepository.Params): Promise<LoadUserAccountRepository.Result> {
