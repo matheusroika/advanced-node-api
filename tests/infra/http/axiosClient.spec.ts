@@ -5,12 +5,16 @@ jest.mock('axios')
 
 type Sut = {
   sut: AxiosHttpClient
+  fakeAxios: jest.Mocked<typeof axios>
 }
 
 const makeSut = (): Sut => {
   const sut = new AxiosHttpClient()
+  const fakeAxios = axios as jest.Mocked<typeof axios>
+  fakeAxios.get.mockResolvedValue({ status: 200, data: 'any_data' })
   return {
-    sut
+    sut,
+    fakeAxios
   }
 }
 
@@ -20,10 +24,16 @@ describe('Axios Http Client', () => {
     const params = { any: 'any' }
 
     test('Should call axios.get with correct params', async () => {
-      const { sut } = makeSut()
+      const { sut, fakeAxios } = makeSut()
       await sut.get({ url, params })
-      expect(axios.get).toHaveBeenCalledWith(url, { params })
-      expect(axios.get).toHaveBeenCalledTimes(1)
+      expect(fakeAxios.get).toHaveBeenCalledWith(url, { params })
+      expect(fakeAxios.get).toHaveBeenCalledTimes(1)
+    })
+
+    test('Should return correctly on axios.get success', async () => {
+      const { sut } = makeSut()
+      const result = await sut.get({ url, params })
+      expect(result).toEqual('any_data')
     })
   })
 })
