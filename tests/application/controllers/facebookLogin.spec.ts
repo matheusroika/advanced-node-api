@@ -41,4 +41,13 @@ describe('Facebook Login Controller', () => {
       data: new Error('The "token" field is required')
     })
   })
+
+  test('Should return 400 if token is undefined', async () => {
+    const { sut } = makeSut()
+    const httpResponse = await sut.handle({ token: undefined })
+    expect(httpResponse).toEqual({
+      statusCode: 400,
+      data: new Error('The "token" field is required')
+    })
+  })
 })
