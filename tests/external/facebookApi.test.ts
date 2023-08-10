@@ -25,4 +25,10 @@ describe('Facebook External API', () => {
       name: process.env.FACEBOOK_USER_TEST_NAME as string
     })
   })
+
+  test('Should return undefined if token is invalid', async () => {
+    const { sut } = makeSut()
+    const fbUser = await sut.loadUser({ token: 'invalid_token' })
+    expect(fbUser).toBeUndefined()
+  })
 })
