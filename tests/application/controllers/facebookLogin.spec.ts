@@ -1,7 +1,8 @@
 import { mock, type MockProxy } from 'jest-mock-extended'
 import { FacebookLoginController } from '@/application/controllers'
 import { AccessToken } from '@/domain/models'
-import { AuthenticationError, ServerError } from '@/domain/errors'
+import { AuthenticationError } from '@/domain/errors'
+import { RequiredFieldError, ServerError, UnauthorizedError } from '@/application/errors'
 import type { FacebookAuthentication } from '@/domain/features'
 
 type Sut = {
@@ -25,7 +26,7 @@ describe('Facebook Login Controller', () => {
     const httpResponse = await sut.handle({ token: '' })
     expect(httpResponse).toEqual({
       statusCode: 400,
-      data: new Error('The "token" field is required')
+      data: new RequiredFieldError('token')
     })
   })
 
@@ -34,7 +35,7 @@ describe('Facebook Login Controller', () => {
     const httpResponse = await sut.handle({ token: null })
     expect(httpResponse).toEqual({
       statusCode: 400,
-      data: new Error('The "token" field is required')
+      data: new RequiredFieldError('token')
     })
   })
 
@@ -43,7 +44,7 @@ describe('Facebook Login Controller', () => {
     const httpResponse = await sut.handle({ token: undefined })
     expect(httpResponse).toEqual({
       statusCode: 400,
-      data: new Error('The "token" field is required')
+      data: new RequiredFieldError('token')
     })
   })
 
@@ -60,7 +61,7 @@ describe('Facebook Login Controller', () => {
     const httpResponse = await sut.handle({ token: 'any_token' })
     expect(httpResponse).toEqual({
       statusCode: 401,
-      data: new AuthenticationError()
+      data: new UnauthorizedError()
     })
   })
 
