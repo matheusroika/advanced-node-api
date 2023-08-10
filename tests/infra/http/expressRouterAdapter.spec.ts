@@ -35,4 +35,12 @@ describe('Express Router Adapter', () => {
     await sut.adapt(req, res)
     expect(controller.handle).toHaveBeenCalledWith({ data: 'any_data' })
   })
+
+  test('Should call Controller handle with empty request', async () => {
+    const { sut, controller } = makeSut()
+    const req = getMockReq()
+    const { res } = getMockRes()
+    await sut.adapt(req, res)
+    expect(controller.handle).toHaveBeenCalledWith({})
+  })
 })
