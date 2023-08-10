@@ -10,7 +10,8 @@ class ExpressRouterAdapter {
 
   async adapt (req: Request, res: Response): Promise<void> {
     const response = await this.controller.handle({ ...req.body })
-    res.status(200).json(response.data)
+    if (response.statusCode === 200) res.status(200).json(response.data)
+    else res.status(400).json({ error: response.data.message })
   }
 }
 
@@ -55,6 +56,18 @@ describe('Express Router Adapter', () => {
     await sut.adapt(req, res)
     expect(res.status).toHaveBeenCalledWith(200)
     expect(res.json).toHaveBeenCalledWith({ data: 'any_data' })
+    expect(res.status).toHaveBeenCalledTimes(1)
+    expect(res.json).toHaveBeenCalledTimes(1)
+  })
+
+  test('Should pass error code and error message through', async () => {
+    const { sut, controller } = makeSut()
+    controller.handle.mockResolvedValue({ statusCode: 400, data: new Error('any error') })
+    const req = getMockReq()
+    const { res } = getMockRes()
+    await sut.adapt(req, res)
+    expect(res.status).toHaveBeenCalledWith(400)
+    expect(res.json).toHaveBeenCalledWith({ error: 'any error' })
     expect(res.status).toHaveBeenCalledTimes(1)
     expect(res.json).toHaveBeenCalledTimes(1)
   })
