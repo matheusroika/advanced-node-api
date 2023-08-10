@@ -35,4 +35,13 @@ describe('Validation Composite', () => {
     const error = sut.validate()
     expect(error).toEqual(new Error('error 1'))
   })
+
+  test('Should return an Error if a Validator returns Error', () => {
+    const validators = [mock<Validator>(), mock<Validator>()]
+    validators[0].validate.mockReturnValueOnce(undefined)
+    validators[1].validate.mockReturnValueOnce(new Error('error 2'))
+    const sut = new ValidationComposite(validators)
+    const error = sut.validate()
+    expect(error).toEqual(new Error('error 2'))
+  })
 })
