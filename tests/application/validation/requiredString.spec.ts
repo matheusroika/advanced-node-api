@@ -1,18 +1,7 @@
+import { RequiredStringValidator } from '@/application/validation'
 import { RequiredFieldError } from '@/application/errors'
 
-class RequiredStringValidator {
-  constructor (
-    private readonly value: string | undefined | null,
-    private readonly fieldName: string
-  ) {}
-
-  validate (): Error | undefined {
-    if (this.value) return
-    return new RequiredFieldError(this.fieldName)
-  }
-}
-
-describe('Required Field Validator', () => {
+describe('Required String Validator', () => {
   test('Should return RequireFieldError if value is empty', () => {
     const sut = new RequiredStringValidator('', 'any_field')
     const error = sut.validate()
