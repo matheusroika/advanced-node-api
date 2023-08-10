@@ -2,13 +2,12 @@ import { RequiredStringValidator, type Validator } from '.'
 
 export class ValidationBuilder {
   private constructor (
-    private readonly value: string,
+    private readonly value: string | undefined | null,
     private readonly fieldName: string,
     private readonly validators: Validator[]
   ) {}
 
-  static of (params: { value: string, fieldName: string }): ValidationBuilder {
-    const { value, fieldName } = params
+  static of (value: string | undefined | null, fieldName: string): ValidationBuilder {
     return new ValidationBuilder(value, fieldName, [])
   }
 
