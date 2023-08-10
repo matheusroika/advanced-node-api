@@ -18,13 +18,18 @@ export class FacebookLoginController {
 
   async handle (httpRequest: HttpRequest): Promise<HttpResponse<Data>> {
     try {
-      if (!httpRequest.token) return badRequest(new RequiredFieldError('token'))
-      const authResult = await this.facebookAuth.auth({ token: httpRequest.token })
+      const error = this.validate(httpRequest)
+      if (error) return badRequest(error)
+      const authResult = await this.facebookAuth.auth({ token: httpRequest.token as string })
       if (authResult instanceof AuthenticationError) return unauthorized()
       return ok({ accessToken: authResult.value })
     } catch (error) {
       const typedError = error as Error
       return serverError(typedError)
     }
+  }
+
+  private validate (httpRequest: HttpRequest): Error | undefined {
+    if (!httpRequest.token) return new RequiredFieldError('token')
   }
 }
