@@ -7,6 +7,8 @@ import type { LoadFacebookUser } from '@/data/contracts/apis'
 import type { LoadUserAccountRepository, SaveFacebookUserAccountRepository } from '@/data/contracts/repositories'
 import type { TokenGenerator } from '@/data/contracts/crypto'
 
+jest.mock('@/domain/models/FacebookAccount')
+
 type Sut = {
   sut: FacebookAuthenticationService
   facebookApi: MockProxy<LoadFacebookUser>
@@ -30,8 +32,6 @@ const makeSut = (): Sut => {
     crypto
   }
 }
-
-jest.mock('@/domain/models/FacebookAccount')
 
 describe('Facebook Authentication Service', () => {
   test('Should call LoadFacebookUser with correct params', async () => {
