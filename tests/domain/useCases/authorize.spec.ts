@@ -9,7 +9,7 @@ type Sut = {
 
 const makeSut = (): Sut => {
   const crypto = mock<TokenValidator>()
-  crypto.validateToken.mockResolvedValue()
+  crypto.validateToken.mockResolvedValue('any_id')
   const sut = new AuthorizeUseCase(crypto)
   return {
     sut,
@@ -23,5 +23,11 @@ describe('Authorize Use Case', () => {
     await sut.auth({ token: 'any_token' })
     expect(crypto.validateToken).toHaveBeenCalledWith({ token: 'any_token' })
     expect(crypto.validateToken).toHaveBeenCalledTimes(1)
+  })
+
+  test('Should return the correct userId on TokenValidator success', async () => {
+    const { sut } = makeSut()
+    const userId = await sut.auth({ token: 'any_token' })
+    expect(userId).toBe('any_id')
   })
 })
