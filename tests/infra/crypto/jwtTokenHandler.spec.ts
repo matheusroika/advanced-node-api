@@ -62,5 +62,12 @@ describe('JWT Token Handler', () => {
       const promise = sut.validateToken({ token: 'any_token' })
       await expect(promise).rejects.toThrow(new Error('jwt_error'))
     })
+
+    test('Should throw if jwt.verify returns null', async () => {
+      const { sut, fakeJwt } = makeSut()
+      fakeJwt.verify.mockImplementation(() => null)
+      const promise = sut.validateToken({ token: 'any_token' })
+      await expect(promise).rejects.toThrow()
+    })
   })
 })
