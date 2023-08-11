@@ -1,9 +1,10 @@
 import request from 'supertest'
+import app from '@/main/config/app'
 import { PostgresUser } from '@/infra/postgres/entities'
+import { UnauthorizedError } from '@/application/errors'
 import { mockDb } from '@/tests/infra/postgres/helpers'
 import type { DataSource } from 'typeorm'
 import type { IBackup, IMemoryDb } from 'pg-mem'
-import app from '@/main/config/app'
 
 describe('Login Routes', () => {
   describe('POST /login/facebook', () => {
@@ -35,17 +36,19 @@ describe('Login Routes', () => {
 
     test('Should return 200 with AccessToken', async () => {
       loadUserSpy.mockResolvedValueOnce({ facebookId: 'any_fb_id', name: 'Facebook Name', email: 'any@email.com' })
-      await request(app)
+      const { status, body } = await request(app)
         .post('/api/login/facebook')
         .send({ token: 'valid_token' })
-        .expect(200)
+      expect(status).toBe(200)
+      expect(body.accessToken).toBeDefined()
     })
 
     test('Should return 401 with UnauthorizedError', async () => {
-      await request(app)
+      const { status, body } = await request(app)
         .post('/api/login/facebook')
         .send({ token: 'invalid_token' })
-        .expect(401)
+      expect(status).toBe(401)
+      expect(body).toEqual({ error: new UnauthorizedError().message })
     })
   })
 })
