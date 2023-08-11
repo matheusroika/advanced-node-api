@@ -12,6 +12,7 @@ const makeSut = (): Sut => {
   const sut = new JwtTokenHandler('any_secret')
   const fakeJwt = jwt as jest.Mocked<typeof jwt>
   fakeJwt.sign.mockImplementation(() => 'any_token')
+  fakeJwt.verify.mockImplementation(() => ({ key: 'any_key' }))
   return {
     sut,
     fakeJwt
@@ -47,6 +48,12 @@ describe('JWT Token Handler', () => {
       await sut.validateToken({ token: 'any_token' })
       expect(fakeJwt.verify).toHaveBeenCalledWith('any_token', 'any_secret')
       expect(fakeJwt.verify).toHaveBeenCalledTimes(1)
+    })
+
+    test('Should return the key used to sign on jwt.verify success', async () => {
+      const { sut } = makeSut()
+      const generatedKey = await sut.validateToken({ token: 'any_token' })
+      expect(generatedKey).toBe('any_key')
     })
   })
 })
