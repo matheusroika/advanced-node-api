@@ -40,5 +40,12 @@ describe('Login Routes', () => {
         .send({ token: 'valid_token' })
         .expect(200)
     })
+
+    test('Should return 401 with UnauthorizedError', async () => {
+      await request(app)
+        .post('/api/login/facebook')
+        .send({ token: 'invalid_token' })
+        .expect(401)
+    })
   })
 })
