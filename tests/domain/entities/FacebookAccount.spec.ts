@@ -1,4 +1,4 @@
-import { FacebookAccount } from '@/domain/models'
+import { FacebookAccount } from '@/domain/entities'
 import { mockAccountData, mockFacebookData } from '../mocks/mockFacebookAccount'
 
 describe('Facebook Account Model', () => {

@@ -1,5 +1,5 @@
-import { AccessToken, FacebookAccount } from '@/domain/models'
-import { AuthenticationError } from '@/domain/errors'
+import { AccessToken, FacebookAccount } from '@/domain/entities'
+import { AuthenticationError } from '@/domain/entities/errors'
 import type { FacebookAuthentication } from '@/domain/features'
 import type { LoadFacebookUser } from '@/domain/contracts/apis'
 import type { LoadUserAccountRepository, SaveFacebookUserAccountRepository } from '@/domain/contracts/repositories'

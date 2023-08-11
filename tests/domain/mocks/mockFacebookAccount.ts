@@ -1,4 +1,4 @@
-import type { AccountData, FacebookData } from '@/domain/models'
+import type { AccountData, FacebookData } from '@/domain/entities'
 
 export const mockFacebookData = (): FacebookData => ({
   name: 'Facebook Name',
