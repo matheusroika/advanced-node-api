@@ -15,11 +15,11 @@ export class FacebookAuthenticationUseCase implements FacebookAuthentication {
   async auth (params: FacebookAuthentication.Params): Promise<FacebookAuthentication.Result> {
     const { token } = params
     const facebookData = await this.facebookApi.loadUser({ token })
-    if (!facebookData) return new AuthenticationError()
+    if (!facebookData) throw new AuthenticationError()
     const userData = await this.userAccountRepository.load({ email: facebookData.email })
     const facebookAccount = new FacebookAccount(facebookData, userData)
     const { id } = await this.userAccountRepository.saveWithFacebook(facebookAccount)
-    const generatedToken = await this.crypto.generateToken({ key: id, validTimeInMs: AccessToken.validTimeInMs })
-    return new AccessToken(generatedToken)
+    const accessToken = await this.crypto.generateToken({ key: id, validTimeInMs: AccessToken.validTimeInMs })
+    return { accessToken }
   }
 }
