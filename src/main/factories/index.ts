@@ -1,6 +1,6 @@
 export * from './controllers/facebookLoginControllerFactory'
 export * from './useCases/facebookAuthenticationUseCaseFactory'
 export * from './infra/api/facebookApiFactory'
-export * from './infra/crypto/jwtTokenGeneratorFactory'
+export * from './infra/crypto/JwtTokenHandlerFactory'
 export * from './infra/http/axiosHttpClientFactory'
 export * from './infra/postgres/userAccountRepositoryFactory'

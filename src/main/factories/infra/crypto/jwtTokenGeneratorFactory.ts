@@ -1,5 +1,5 @@
-import { JwtTokenGenerator } from '@/infra/crypto'
+import { JwtTokenHandler } from '@/infra/crypto'
 
-export const makeJwtTokenGenerator = (): JwtTokenGenerator => {
-  return new JwtTokenGenerator(process.env.JWT_SECRET as string)
+export const makeJwtTokenHandler = (): JwtTokenHandler => {
+  return new JwtTokenHandler(process.env.JWT_SECRET as string)
 }
