@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken'
-import type { TokenGenerator } from '@/data/contracts/crypto'
+import type { TokenGenerator } from '@/domain/contracts/crypto'
 
 export class JwtTokenGenerator implements TokenGenerator {
   constructor (private readonly secret: string) {}
