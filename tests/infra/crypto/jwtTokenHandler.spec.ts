@@ -19,22 +19,34 @@ const makeSut = (): Sut => {
 }
 
 describe('JWT Token Handler', () => {
-  test('Should call jwt.sign with correct params', async () => {
-    const { sut, fakeJwt } = makeSut()
-    await sut.generateToken({ key: 'any_key', validTimeInMs: 1000 })
-    expect(fakeJwt.sign).toHaveBeenCalledWith({ key: 'any_key' }, 'any_secret', { expiresIn: 1000 })
+  describe('Token Generator', () => {
+    test('Should call jwt.sign with correct params', async () => {
+      const { sut, fakeJwt } = makeSut()
+      await sut.generateToken({ key: 'any_key', validTimeInMs: 1000 })
+      expect(fakeJwt.sign).toHaveBeenCalledWith({ key: 'any_key' }, 'any_secret', { expiresIn: 1000 })
+      expect(fakeJwt.sign).toHaveBeenCalledTimes(1)
+    })
+
+    test('Should return a token on jwt.sign success', async () => {
+      const { sut } = makeSut()
+      const token = await sut.generateToken({ key: 'any_key', validTimeInMs: 1000 })
+      expect(token).toBe('any_token')
+    })
+
+    test('Should throw if jwt.sign throws', async () => {
+      const { sut, fakeJwt } = makeSut()
+      fakeJwt.sign.mockImplementation(() => { throw new Error('jwt_error') })
+      const promise = sut.generateToken({ key: 'any_key', validTimeInMs: 1000 })
+      await expect(promise).rejects.toThrow(new Error('jwt_error'))
+    })
   })
 
-  test('Should return a token on jwt.sign success', async () => {
-    const { sut } = makeSut()
-    const token = await sut.generateToken({ key: 'any_key', validTimeInMs: 1000 })
-    expect(token).toBe('any_token')
-  })
-
-  test('Should throw if jwt.sign throws', async () => {
-    const { sut, fakeJwt } = makeSut()
-    fakeJwt.sign.mockImplementation(() => { throw new Error('jwt_error') })
-    const promise = sut.generateToken({ key: 'any_key', validTimeInMs: 1000 })
-    await expect(promise).rejects.toThrow(new Error('jwt_error'))
+  describe('Token Validator', () => {
+    test('Should call jwt.verify with correct params', async () => {
+      const { sut, fakeJwt } = makeSut()
+      await sut.validateToken({ token: 'any_token' })
+      expect(fakeJwt.verify).toHaveBeenCalledWith('any_token', 'any_secret')
+      expect(fakeJwt.verify).toHaveBeenCalledTimes(1)
+    })
   })
 })
