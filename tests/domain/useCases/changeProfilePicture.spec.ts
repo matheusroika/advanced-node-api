@@ -106,4 +106,12 @@ describe('Change Profile Picture Use Case', () => {
       expect(fileStorage.delete).not.toHaveBeenCalled()
     }
   })
+
+  test('Should throw if SaveUserPicture throws', async () => {
+    const { sut, userProfileRepository } = makeSut()
+    const error = new Error('save picture error')
+    userProfileRepository.savePicture.mockRejectedValueOnce(error)
+    const promise = sut.change({ userId: 'any_id', file: undefined as any })
+    await expect(promise).rejects.toThrow(error)
+  })
 })
