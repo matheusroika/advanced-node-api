@@ -44,7 +44,7 @@ describe('Change Profile Picture Use Case', () => {
 
   test('Should not call UploadFile when file is undefined', async () => {
     const { sut, fileStorage } = makeSut()
-    await sut.change({ userId: 'any_id', file: undefined as any })
+    await sut.change({ userId: 'any_id', file: undefined })
     expect(fileStorage.upload).not.toHaveBeenCalled()
   })
 
@@ -59,7 +59,7 @@ describe('Change Profile Picture Use Case', () => {
 
   test('Should call LoadUserProfile with correct params', async () => {
     const { sut, userProfileRepository } = makeSut()
-    await sut.change({ userId: 'any_id', file: undefined as any })
+    await sut.change({ userId: 'any_id', file: undefined })
     expect(userProfileRepository.load).toHaveBeenCalledWith({ id: 'any_id' })
     expect(userProfileRepository.load).toHaveBeenCalledTimes(1)
   })
@@ -102,7 +102,7 @@ describe('Change Profile Picture Use Case', () => {
     userProfileRepository.savePicture.mockRejectedValueOnce(new Error())
     expect.assertions(1)
     try {
-      await sut.change({ userId: 'any_id', file: undefined as any })
+      await sut.change({ userId: 'any_id', file: undefined })
     } catch (error) {
       expect(fileStorage.delete).not.toHaveBeenCalled()
     }
@@ -112,7 +112,7 @@ describe('Change Profile Picture Use Case', () => {
     const { sut, userProfileRepository } = makeSut()
     const error = new Error('save picture error')
     userProfileRepository.savePicture.mockRejectedValueOnce(error)
-    const promise = sut.change({ userId: 'any_id', file: undefined as any })
+    const promise = sut.change({ userId: 'any_id', file: undefined })
     await expect(promise).rejects.toThrow(error)
   })
 
@@ -145,7 +145,7 @@ describe('Change Profile Picture Use Case', () => {
     const { sut, userProfileRepository } = makeSut()
     const error = new Error('load user error')
     userProfileRepository.load.mockRejectedValueOnce(error)
-    const promise = sut.change({ userId: 'any_id', file: undefined as any })
+    const promise = sut.change({ userId: 'any_id', file: undefined })
     await expect(promise).rejects.toThrow(error)
   })
 })

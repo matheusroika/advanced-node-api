@@ -5,7 +5,7 @@ export interface ChangeProfilePicture {
 export namespace ChangeProfilePicture {
   export type Params = {
     userId: string
-    file: Buffer
+    file?: Buffer
   }
 
   export type Result = {
