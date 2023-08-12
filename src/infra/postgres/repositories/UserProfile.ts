@@ -9,6 +9,6 @@ export class PostgresUserProfileRepository implements SaveUserPicture, LoadUserP
 
   async load ({ id }: LoadUserProfile.Params): Promise<LoadUserProfile.Result> {
     const user = await PostgresUser.findOne({ where: { id: Number(id) } })
-    return user ? { name: user.name } : undefined
+    return user ? { name: user.name ?? undefined } : undefined
   }
 }
