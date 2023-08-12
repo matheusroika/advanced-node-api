@@ -21,6 +21,8 @@ export class AwsS3FileStorage implements UploadFile {
       ACL: 'public-read'
     })
 
+    await this.client.send(command)
+
     return '' + command.resolveMiddleware.toString()
   }
 }
