@@ -18,7 +18,7 @@ export class ChangeProfilePictureUseCase implements ChangeProfilePicture {
     } else {
       const { name } = await this.userProfileRepository.load({ id: userId })
       if (name) {
-        const nameArray = name.split(' ').map(n => n[0])
+        const nameArray = name.split(' ').map(n => n[0].toUpperCase())
         initials = nameArray[0] + nameArray[nameArray.length - 1]
       }
     }
