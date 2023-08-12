@@ -20,9 +20,7 @@ export class AwsS3FileStorage implements UploadFile {
       Body: file,
       ACL: 'public-read'
     })
-
     await this.client.send(command)
-
-    return '' + command.resolveMiddleware.toString()
+    return `https://${this.bucket}.s3.amazonaws.com/${encodeURIComponent(key)}`
   }
 }
