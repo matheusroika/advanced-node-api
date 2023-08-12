@@ -55,4 +55,12 @@ describe('AWS S3 File Storage', () => {
     const imageUrl = await sut.upload({ key: 'any key', file })
     expect(imageUrl).toBe(`https://${bucket}.s3.amazonaws.com/any%20key`)
   })
+
+  test('Should throw if S3Client.send throws', async () => {
+    const sut = new AwsS3FileStorage(accessKey, secret, bucket)
+    const error = new Error('s3 error')
+    mocked(sut.client).send.mockImplementationOnce(() => { throw error })
+    const promise = sut.upload({ key, file })
+    await expect(promise).rejects.toThrow(error)
+  })
 })
