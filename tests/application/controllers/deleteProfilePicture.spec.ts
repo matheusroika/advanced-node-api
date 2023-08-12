@@ -1,4 +1,4 @@
-import { DeleteProfilePictureController } from '@/application/controllers'
+import { Controller, DeleteProfilePictureController } from '@/application/controllers'
 import { type MockProxy, mock } from 'jest-mock-extended'
 import type { ChangeProfilePicture } from '@/domain/features'
 
@@ -17,6 +17,11 @@ const makeSut = (): Sut => {
 }
 
 describe('Delete Profile Picture Controller', () => {
+  test('Should extend Controller', async () => {
+    const { sut } = makeSut()
+    expect(sut).toBeInstanceOf(Controller)
+  })
+
   test('Should call ChangeProfilePicture with correct params', async () => {
     const { sut, changeProfilePicture } = makeSut()
     await sut.handle({ userId: 'any_user_id' })
