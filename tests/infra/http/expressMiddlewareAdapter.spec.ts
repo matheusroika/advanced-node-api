@@ -8,7 +8,8 @@ type Adapter = (req: Request, res: Response, next: NextFunction) => Promise<any>
 
 const adaptExpressMiddleware = (middleware: Middleware): RequestHandler => {
   return async (req, res, next) => {
-    await middleware.handle({ ...req.headers })
+    const { statusCode, data } = await middleware.handle({ ...req.headers })
+    res.status(statusCode).json(data)
   }
 }
 
@@ -23,6 +24,7 @@ type Sut = {
 
 const makeSut = (): Sut => {
   const middleware = mock<Middleware>()
+  middleware.handle.mockResolvedValue({ statusCode: 500, data: { error: 'Any Error' } })
   const sut = adaptExpressMiddleware(middleware) as Adapter
   return {
     sut,
@@ -47,5 +49,16 @@ describe('Express Middleware Adapter', () => {
     await sut(req, res, next)
     expect(middleware.handle).toHaveBeenCalledWith({})
     expect(middleware.handle).toHaveBeenCalledTimes(1)
+  })
+
+  test('Should respond with correct error and statusCode', async () => {
+    const { sut } = makeSut()
+    const req = getMockReq()
+    const { res, next } = getMockRes()
+    await sut(req, res, next)
+    expect(res.status).toHaveBeenCalledWith(500)
+    expect(res.status).toHaveBeenCalledTimes(1)
+    expect(res.json).toHaveBeenCalledWith({ error: 'Any Error' })
+    expect(res.json).toHaveBeenCalledTimes(1)
   })
 })
