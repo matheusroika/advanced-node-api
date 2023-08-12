@@ -87,10 +87,23 @@ describe('Change Profile Picture Use Case', () => {
   test('Should call DeleteFile when file is valid and SaveUserPicture throws', async () => {
     const { sut, userProfileRepository, fileStorage } = makeSut()
     userProfileRepository.savePicture.mockRejectedValueOnce(new Error())
-    const promise = sut.change({ userId: 'any_id', file: Buffer.from('any_buffer') })
-    promise.catch(() => {
+    expect.assertions(2)
+    try {
+      await sut.change({ userId: 'any_id', file: Buffer.from('any_buffer') })
+    } catch (error) {
       expect(fileStorage.delete).toHaveBeenCalledWith({ key: 'any_unique_id' })
       expect(fileStorage.delete).toHaveBeenCalledTimes(1)
-    })
+    }
+  })
+
+  test('Should not call DeleteFile when file is not valid and SaveUserPicture throws', async () => {
+    const { sut, userProfileRepository, fileStorage } = makeSut()
+    userProfileRepository.savePicture.mockRejectedValueOnce(new Error())
+    expect.assertions(1)
+    try {
+      await sut.change({ userId: 'any_id', file: undefined as any })
+    } catch (error) {
+      expect(fileStorage.delete).not.toHaveBeenCalled()
+    }
   })
 })
