@@ -1,26 +1,10 @@
-/* eslint-disable @typescript-eslint/await-thenable */
-import { type HttpResponse } from '@/application/helpers'
 import { getMockReq, getMockRes } from '@jest-mock/express'
-import type { NextFunction, Request, RequestHandler, Response } from 'express'
+import { adaptExpressMiddleware } from '@/infra/http'
+import type { Middleware } from '@/application/middlewares'
+import type { NextFunction, Request, Response } from 'express'
 import { type MockProxy, mock } from 'jest-mock-extended'
 
 type Adapter = (req: Request, res: Response, next: NextFunction) => Promise<any>
-
-const adaptExpressMiddleware = (middleware: Middleware): RequestHandler => {
-  return async (req, res, next) => {
-    const { statusCode, data } = await middleware.handle({ ...req.headers })
-    if (statusCode !== 200) res.status(statusCode).json(data)
-    else {
-      const truthyData = Object.entries(data).filter(entry => entry[1]) // entry[0] = key, entry[1] = value
-      req.locals = { ...req.locals, ...Object.fromEntries(truthyData) }
-      next()
-    }
-  }
-}
-
-interface Middleware {
-  handle: (httpRequest: any) => Promise<HttpResponse>
-}
 
 type Sut = {
   sut: Adapter
