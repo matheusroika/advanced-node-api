@@ -23,4 +23,10 @@ describe('Delete Profile Picture Controller', () => {
     expect(changeProfilePicture.change).toHaveBeenCalledWith({ userId: 'any_user_id' })
     expect(changeProfilePicture.change).toHaveBeenCalledTimes(1)
   })
+
+  test('Should return 204 on success', async () => {
+    const { sut } = makeSut()
+    const httpResponse = await sut.handle({ userId: 'any_user_id' })
+    expect(httpResponse).toEqual({ statusCode: 204 })
+  })
 })
