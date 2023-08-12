@@ -5,7 +5,8 @@
     "debug": "node --inspect=0.0.0.0:9222 dist/main",
     "test": "jest --passWithNoTests --silent --noStackTrace --runInBand",
     "test:watch": "yarn test --watch",
-    "test:verbose": "jest --passWithNoTests --runInBand --watch",
+    "test:verbose": "jest --passWithNoTests --runInBand",
+    "test:verbose:watch": "yarn test:verbose --watch",
     "test:staged": "yarn test --findRelatedTests",
     "test:ci": "yarn test --coverage",
     "test:fb-api": "yarn test -c ./jest.integration.config.js ./tests/external/facebookApi.test.ts"

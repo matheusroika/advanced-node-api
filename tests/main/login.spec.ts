@@ -8,8 +8,8 @@ import type { IBackup, IMemoryDb } from 'pg-mem'
 
 describe('Login Routes', () => {
   describe('POST /login/facebook', () => {
-    let dataSource: DataSource
     let db: IMemoryDb
+    let dataSource: DataSource
     let backup: IBackup
 
     beforeAll(async () => {
@@ -29,13 +29,12 @@ describe('Login Routes', () => {
 
     const loadUserSpy = jest.fn()
     jest.mock('@/infra/apis/facebook', () => ({
-      FacebookApi: jest.fn().mockReturnValue({
-        loadUser: loadUserSpy
-      })
+      FacebookApi: jest.fn().mockReturnValue({ loadUser: loadUserSpy })
     }))
 
     test('Should return 200 with AccessToken', async () => {
       loadUserSpy.mockResolvedValueOnce({ facebookId: 'any_fb_id', name: 'Facebook Name', email: 'any@email.com' })
+
       const { status, body } = await request(app)
         .post('/api/login/facebook')
         .send({ token: 'valid_token' })
