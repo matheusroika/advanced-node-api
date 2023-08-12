@@ -2,19 +2,19 @@ import { ChangeProfilePictureUseCase } from '@/domain/useCases'
 import { type MockProxy, mock } from 'jest-mock-extended'
 import type { UploadFile } from '@/domain/contracts/gateways'
 import type { UUIDGenerator } from '@/domain/contracts/crypto'
-import type { SaveUserPicture } from '@/domain/contracts/repositories'
+import type { LoadUserProfile, SaveUserPicture } from '@/domain/contracts/repositories'
 
 type Sut = {
   sut: ChangeProfilePictureUseCase
   fileStorage: MockProxy<UploadFile>
   crypto: MockProxy<UUIDGenerator>
-  userProfileRepository: MockProxy<SaveUserPicture>
+  userProfileRepository: MockProxy<SaveUserPicture & LoadUserProfile>
 }
 
 const makeSut = (): Sut => {
   const fileStorage = mock<UploadFile>()
   const crypto = mock<UUIDGenerator>()
-  const userProfileRepository = mock<SaveUserPicture>()
+  const userProfileRepository = mock<SaveUserPicture & LoadUserProfile>()
   fileStorage.upload.mockResolvedValue('any_url')
   crypto.uuid.mockReturnValue('any_unique_id')
   const sut = new ChangeProfilePictureUseCase(fileStorage, crypto, userProfileRepository)
@@ -55,5 +55,12 @@ describe('Change Profile Picture Use Case', () => {
     await sut.change({ userId: 'any_id', file: undefined as any })
     expect(userProfileRepository.savePicture).toHaveBeenCalledWith({ pictureUrl: undefined })
     expect(userProfileRepository.savePicture).toHaveBeenCalledTimes(1)
+  })
+
+  test('Should call LoadUserProfile with correct params', async () => {
+    const { sut, userProfileRepository } = makeSut()
+    await sut.change({ userId: 'any_id', file: undefined as any })
+    expect(userProfileRepository.load).toHaveBeenCalledWith({ id: 'any_id' })
+    expect(userProfileRepository.load).toHaveBeenCalledTimes(1)
   })
 })
