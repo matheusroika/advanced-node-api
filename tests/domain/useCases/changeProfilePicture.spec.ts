@@ -68,4 +68,19 @@ describe('Change Profile Picture Use Case', () => {
     await sut.change({ userId: 'any_id', file: Buffer.from('any_buffer') })
     expect(userProfileRepository.load).not.toHaveBeenCalled()
   })
+
+  test('Should return correct data on success', async () => {
+    const { sut } = makeSut()
+    mocked(UserProfile).mockImplementationOnce(id => ({
+      setPicture: jest.fn() as any,
+      id: 'any_id',
+      pictureUrl: 'any_url',
+      initials: 'TN'
+    }))
+    const result = await sut.change({ userId: 'any_id', file: Buffer.from('any_buffer') })
+    expect(result).toMatchObject({
+      pictureUrl: 'any_url',
+      initials: 'TN'
+    })
+  })
 })
