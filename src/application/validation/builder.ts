@@ -1,4 +1,4 @@
-import { RequiredStringValidator, type Validator } from '.'
+import { RequiredValidator, type Validator } from '.'
 
 export class ValidationBuilder {
   private constructor (
@@ -12,7 +12,7 @@ export class ValidationBuilder {
   }
 
   required (): ValidationBuilder {
-    this.validators.push(new RequiredStringValidator(this.value, this.fieldName))
+    this.validators.push(new RequiredValidator(this.value, this.fieldName))
     return this
   }
 

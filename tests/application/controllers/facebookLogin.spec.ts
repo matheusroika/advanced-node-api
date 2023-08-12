@@ -1,6 +1,6 @@
 import { mock, type MockProxy } from 'jest-mock-extended'
 import { Controller, FacebookLoginController } from '@/application/controllers'
-import { RequiredStringValidator } from '@/application/validation'
+import { RequiredValidator } from '@/application/validation'
 import { AuthenticationError } from '@/domain/entities/errors'
 import { UnauthorizedError } from '@/application/errors'
 import type { FacebookAuthentication } from '@/domain/features'
@@ -29,7 +29,7 @@ describe('Facebook Login Controller', () => {
   test('Should build correct Validators', async () => {
     const { sut } = makeSut()
     const validators = sut.getValidators({ token: '' })
-    expect(validators).toEqual([new RequiredStringValidator('', 'token')])
+    expect(validators).toEqual([new RequiredValidator('', 'token')])
   })
 
   test('Should call FacebookAuthentication with correct params', async () => {
