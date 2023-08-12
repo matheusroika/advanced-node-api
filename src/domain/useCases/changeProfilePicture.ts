@@ -11,8 +11,8 @@ export class ChangeProfilePictureUseCase implements ChangeProfilePicture {
   ) {}
 
   async change ({ userId, file }: ChangeProfilePicture.Params): Promise<void> {
-    if (!file) return
-    const pictureUrl = await this.fileStorage.upload({ file, key: this.crypto.uuid({ key: userId }) })
+    let pictureUrl: string | undefined
+    if (file) pictureUrl = await this.fileStorage.upload({ file, key: this.crypto.uuid({ key: userId }) })
     await this.userProfileRepository.savePicture({ pictureUrl })
   }
 }
