@@ -1,7 +1,7 @@
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
-import type { UploadFile } from '@/domain/contracts/gateways'
+import { DeleteObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
+import type { UploadFile, DeleteFile } from '@/domain/contracts/gateways'
 
-export class AwsS3FileStorage implements UploadFile {
+export class AwsS3FileStorage implements UploadFile, DeleteFile {
   client: S3Client
 
   constructor (accessKey: string, secret: string, private readonly bucket: string) {
@@ -22,5 +22,13 @@ export class AwsS3FileStorage implements UploadFile {
     })
     await this.client.send(command)
     return `https://${this.bucket}.s3.amazonaws.com/${encodeURIComponent(key)}`
+  }
+
+  async delete ({ key }: DeleteFile.Params): Promise<void> {
+    const command = new DeleteObjectCommand({
+      Bucket: this.bucket,
+      Key: key
+    })
+    await this.client.send(command)
   }
 }
