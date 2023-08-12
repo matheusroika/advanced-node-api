@@ -18,4 +18,13 @@ describe('Authentication Middleware', () => {
       data: new ForbiddenError()
     })
   })
+
+  test('Should return 403 if Authorization header is null', async () => {
+    const sut = new AuthenticationMiddleware()
+    const httpResponse = await sut.handle({ authorization: null as any })
+    expect(httpResponse).toEqual({
+      statusCode: 403,
+      data: new ForbiddenError()
+    })
+  })
 })
