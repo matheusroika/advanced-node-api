@@ -50,6 +50,7 @@ describe('Change Profile Picture Use Case', () => {
 
   test('Should call SaveUserPicture with correct params', async () => {
     const { sut, userProfileRepository } = makeSut()
+    userProfileRepository.load.mockResolvedValueOnce(undefined)
     await sut.change({ userId: 'any_id', file: Buffer.from('any_buffer') })
     const userProfileInstance = mocked(UserProfile).mock.instances[0]
     expect(userProfileRepository.savePicture).toHaveBeenCalledWith(userProfileInstance)
