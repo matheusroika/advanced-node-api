@@ -1,5 +1,5 @@
 import { SaveProfilePictureController } from '@/application/controllers'
-import { InvalidMimeTypeError, RequiredFieldError } from '@/application/errors'
+import { InvalidMimeTypeError, MaxFileSizeError, RequiredFieldError } from '@/application/errors'
 
 type Sut = {
   sut: SaveProfilePictureController
@@ -76,6 +76,16 @@ describe('Save Profile Picture Controller', () => {
     expect(httpResponse).not.toEqual({
       statusCode: 400,
       data: new InvalidMimeTypeError(['png', 'jpg', 'jpeg'])
+    })
+  })
+
+  test('Should return 400 if file size is bigger than 1MB', async () => {
+    const { sut } = makeSut()
+    const invalidBuffer = Buffer.from(new ArrayBuffer(2 * 1024 * 1024)) // 2MB
+    const httpResponse = await sut.handle({ file: { buffer: invalidBuffer, mimeType } })
+    expect(httpResponse).toEqual({
+      statusCode: 400,
+      data: new MaxFileSizeError(1)
     })
   })
 })
