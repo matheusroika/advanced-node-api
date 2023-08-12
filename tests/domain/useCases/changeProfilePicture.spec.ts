@@ -114,4 +114,37 @@ describe('Change Profile Picture Use Case', () => {
     const promise = sut.change({ userId: 'any_id', file: undefined as any })
     await expect(promise).rejects.toThrow(error)
   })
+
+  test('Should throw if UploadFile throws', async () => {
+    const { sut, fileStorage } = makeSut()
+    const error = new Error('upload file error')
+    fileStorage.upload.mockRejectedValueOnce(error)
+    const promise = sut.change({ userId: 'any_id', file: Buffer.from('any_buffer') })
+    await expect(promise).rejects.toThrow(error)
+  })
+
+  test('Should throw if DeleteFile throws', async () => {
+    const { sut, fileStorage, userProfileRepository } = makeSut()
+    const error = new Error('delete file error')
+    userProfileRepository.savePicture.mockRejectedValueOnce(new Error())
+    fileStorage.delete.mockRejectedValueOnce(error)
+    const promise = sut.change({ userId: 'any_id', file: Buffer.from('any_buffer') })
+    await expect(promise).rejects.toThrow(error)
+  })
+
+  test('Should throw if UUIDGenerator throws', async () => {
+    const { sut, crypto } = makeSut()
+    const error = new Error('uuid error')
+    crypto.uuid.mockImplementationOnce(() => { throw error })
+    const promise = sut.change({ userId: 'any_id', file: Buffer.from('any_buffer') })
+    await expect(promise).rejects.toThrow(error)
+  })
+
+  test('Should throw if LoadUserProfile throws', async () => {
+    const { sut, userProfileRepository } = makeSut()
+    const error = new Error('load user error')
+    userProfileRepository.load.mockRejectedValueOnce(error)
+    const promise = sut.change({ userId: 'any_id', file: undefined as any })
+    await expect(promise).rejects.toThrow(error)
+  })
 })
