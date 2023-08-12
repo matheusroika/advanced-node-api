@@ -12,7 +12,7 @@
     "test:verbose:watch": "yarn test:verbose --watch",
     "test:staged": "yarn test --findRelatedTests",
     "test:ci": "yarn test --coverage",
-    "test:fb-api": "yarn test -c ./jest.integration.config.js ./tests/external/facebookApi.test.ts"
+    "test:fb-api": "yarn test -c ./jest.integration.config.js ./tests/external/facebookGateway.test.ts"
   },
   "name": "advanced-node-api",
   "version": "0.0.1",

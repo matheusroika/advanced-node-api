@@ -28,8 +28,8 @@ describe('Login Routes', () => {
     })
 
     const loadUserSpy = jest.fn()
-    jest.mock('@/infra/apis/facebook', () => ({
-      FacebookApi: jest.fn().mockReturnValue({ loadUser: loadUserSpy })
+    jest.mock('@/infra/gateways/facebook', () => ({
+      FacebookGateway: jest.fn().mockReturnValue({ loadUser: loadUserSpy })
     }))
 
     test('Should return 200 with AccessToken', async () => {

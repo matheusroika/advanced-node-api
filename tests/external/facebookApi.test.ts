@@ -1,13 +1,13 @@
-import { FacebookApi } from '@/infra/apis'
+import { FacebookGateway } from '@/infra/gateways'
 import { AxiosHttpClient } from '@/infra/http'
 
 type Sut = {
-  sut: FacebookApi
+  sut: FacebookGateway
 }
 
 const makeSut = (): Sut => {
   const axiosClient = new AxiosHttpClient()
-  const sut = new FacebookApi(
+  const sut = new FacebookGateway(
     axiosClient, process.env.FACEBOOK_CLIENT_ID as string, process.env.FACEBOOK_CLIENT_SECRET as string
   )
   return {

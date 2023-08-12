@@ -1,9 +1,9 @@
-import { FacebookApi } from '@/infra/apis'
+import { FacebookGateway } from '@/infra/gateways'
 import { mock, type MockProxy } from 'jest-mock-extended'
 import type { HttpGetClient } from '@/infra/http'
 
 type Sut = {
-  sut: FacebookApi
+  sut: FacebookGateway
   httpClient: MockProxy<HttpGetClient>
 }
 
@@ -16,14 +16,14 @@ const makeSut = (): Sut => {
     .mockResolvedValueOnce({ access_token: 'any_app_token' })
     .mockResolvedValueOnce({ data: { user_id: 'any_user_id' } })
     .mockResolvedValueOnce({ id: 'any_fb_id', name: 'Facebook Name', email: 'any@email.com' })
-  const sut = new FacebookApi(httpClient, clientId, clientSecret)
+  const sut = new FacebookGateway(httpClient, clientId, clientSecret)
   return {
     sut,
     httpClient
   }
 }
 
-describe('Facebook Api', () => {
+describe('Facebook Gateway', () => {
   test('Should call httpClient.get with correct params to get App Token', async () => {
     const { sut, httpClient } = makeSut()
     await sut.loadUser({ token: 'any_client_token' })
