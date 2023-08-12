@@ -1,25 +1,7 @@
-import { ForbiddenError } from '@/application/errors'
-import { type HttpResponse, forbidden, ok } from '@/application/helpers'
-import type { AuthorizeUseCase } from '@/domain/useCases'
 import { type MockProxy, mock } from 'jest-mock-extended'
-import { RequiredStringValidator } from '@/application/validation'
-
-type HttpRequest = { authorization: string }
-type Data = Error | { userId: string }
-class AuthenticationMiddleware {
-  constructor (private readonly authorize: AuthorizeUseCase) {}
-
-  async handle ({ authorization }: HttpRequest): Promise<HttpResponse<Data>> {
-    try {
-      const error = new RequiredStringValidator(authorization, 'authorization').validate()
-      if (error) return forbidden()
-      const userId = await this.authorize.auth({ token: authorization })
-      return ok({ userId })
-    } catch (error) {
-      return forbidden()
-    }
-  }
-}
+import { AuthenticationMiddleware } from '@/application/middlewares'
+import { ForbiddenError } from '@/application/errors'
+import type { AuthorizeUseCase } from '@/domain/useCases'
 
 type Sut = {
   sut: AuthenticationMiddleware
