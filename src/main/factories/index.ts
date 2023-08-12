@@ -1,4 +1,5 @@
 export * from './controllers/facebookLoginControllerFactory'
+export * from './middlewares/authenticationMiddlewareFactory'
 export * from './useCases/facebookAuthenticationUseCaseFactory'
 export * from './infra/api/facebookApiFactory'
 export * from './infra/crypto/jwtTokenHandlerFactory'
