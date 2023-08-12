@@ -48,7 +48,34 @@ describe('Save Profile Picture Controller', () => {
     const httpResponse = await sut.handle({ file: { buffer, mimeType: 'invalid_type' } })
     expect(httpResponse).toEqual({
       statusCode: 400,
-      data: new InvalidMimeTypeError(['png', 'jpeg'])
+      data: new InvalidMimeTypeError(['png', 'jpg', 'jpeg'])
+    })
+  })
+
+  test('Should not return 400 if file type is valid', async () => {
+    const { sut } = makeSut()
+    const httpResponse = await sut.handle({ file: { buffer, mimeType: 'image/png' } })
+    expect(httpResponse).not.toEqual({
+      statusCode: 400,
+      data: new InvalidMimeTypeError(['png', 'jpg', 'jpeg'])
+    })
+  })
+
+  test('Should not return 400 if file type is valid', async () => {
+    const { sut } = makeSut()
+    const httpResponse = await sut.handle({ file: { buffer, mimeType: 'image/jpg' } })
+    expect(httpResponse).not.toEqual({
+      statusCode: 400,
+      data: new InvalidMimeTypeError(['png', 'jpg', 'jpeg'])
+    })
+  })
+
+  test('Should not return 400 if file type is valid', async () => {
+    const { sut } = makeSut()
+    const httpResponse = await sut.handle({ file: { buffer, mimeType: 'image/jpeg' } })
+    expect(httpResponse).not.toEqual({
+      statusCode: 400,
+      data: new InvalidMimeTypeError(['png', 'jpg', 'jpeg'])
     })
   })
 })
