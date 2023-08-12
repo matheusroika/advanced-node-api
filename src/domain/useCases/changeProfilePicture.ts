@@ -9,6 +9,7 @@ export class ChangeProfilePictureUseCase implements ChangeProfilePicture {
   ) {}
 
   async change ({ userId, file }: ChangeProfilePicture.Params): Promise<void> {
+    if (!file) return
     await this.fileStorage.upload({ file, key: this.crypto.uuid({ key: userId }) })
   }
 }
