@@ -1,16 +1,13 @@
-import { type MockProxy, mock } from 'jest-mock-extended'
 import { AuthenticationMiddleware } from '@/application/middlewares'
 import { ForbiddenError } from '@/application/errors'
-import type { AuthorizeUseCase } from '@/domain/useCases'
 
 type Sut = {
   sut: AuthenticationMiddleware
-  authorize: MockProxy<AuthorizeUseCase>
+  authorize: jest.Mock
 }
 
 const makeSut = (): Sut => {
-  const authorize = mock<AuthorizeUseCase>()
-  authorize.auth.mockResolvedValue('any_user_id')
+  const authorize = jest.fn().mockResolvedValue('any_user_id')
   const sut = new AuthenticationMiddleware(authorize)
   return {
     sut,
@@ -49,13 +46,13 @@ describe('Authentication Middleware', () => {
   test('Should call Authorize with correct params', async () => {
     const { sut, authorize } = makeSut()
     await sut.handle({ authorization: 'any_auth_token' })
-    expect(authorize.auth).toHaveBeenCalledWith({ token: 'any_auth_token' })
-    expect(authorize.auth).toHaveBeenCalledTimes(1)
+    expect(authorize).toHaveBeenCalledWith({ token: 'any_auth_token' })
+    expect(authorize).toHaveBeenCalledTimes(1)
   })
 
   test('Should return 403 if Authorize throws', async () => {
     const { sut, authorize } = makeSut()
-    authorize.auth.mockRejectedValueOnce(new Error('any error'))
+    authorize.mockRejectedValueOnce(new Error('any error'))
     const httpResponse = await sut.handle({ authorization: 'any_auth_token' })
     expect(httpResponse).toEqual({
       statusCode: 403,
