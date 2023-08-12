@@ -10,9 +10,13 @@ class AuthenticationMiddleware {
   constructor (private readonly authorize: AuthorizeUseCase) {}
 
   async handle ({ authorization }: HttpRequest): Promise<HttpResponse<Error> | undefined> {
-    const error = new RequiredStringValidator(authorization, 'authorization').validate()
-    if (error) return forbidden()
-    await this.authorize.auth({ token: authorization })
+    try {
+      const error = new RequiredStringValidator(authorization, 'authorization').validate()
+      if (error) return forbidden()
+      await this.authorize.auth({ token: authorization })
+    } catch (error) {
+      return forbidden()
+    }
   }
 }
 
@@ -63,5 +67,15 @@ describe('Authentication Middleware', () => {
     await sut.handle({ authorization: 'any_auth_token' })
     expect(authorize.auth).toHaveBeenCalledWith({ token: 'any_auth_token' })
     expect(authorize.auth).toHaveBeenCalledTimes(1)
+  })
+
+  test('Should return 403 if Authorize throws', async () => {
+    const { sut, authorize } = makeSut()
+    authorize.auth.mockRejectedValueOnce(new Error('any error'))
+    const httpResponse = await sut.handle({ authorization: 'any_auth_token' })
+    expect(httpResponse).toEqual({
+      statusCode: 403,
+      data: new ForbiddenError()
+    })
   })
 })
