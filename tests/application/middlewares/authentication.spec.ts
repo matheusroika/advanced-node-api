@@ -27,4 +27,13 @@ describe('Authentication Middleware', () => {
       data: new ForbiddenError()
     })
   })
+
+  test('Should return 403 if Authorization header is undefined', async () => {
+    const sut = new AuthenticationMiddleware()
+    const httpResponse = await sut.handle({ authorization: undefined as any })
+    expect(httpResponse).toEqual({
+      statusCode: 403,
+      data: new ForbiddenError()
+    })
+  })
 })
