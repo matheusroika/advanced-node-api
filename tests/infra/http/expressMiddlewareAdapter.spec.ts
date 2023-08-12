@@ -42,25 +42,25 @@ describe('Express Middleware Adapter', () => {
 
   test('Should respond with correct error and statusCode', async () => {
     const { sut, middleware } = makeSut()
-    middleware.handle.mockResolvedValueOnce({ statusCode: 500, data: { error: 'Any Error' } })
+    middleware.handle.mockResolvedValueOnce({ statusCode: 500, data: new Error('any error') })
     const req = getMockReq()
     const { res, next } = getMockRes()
     await sut(req, res, next)
     expect(res.status).toHaveBeenCalledWith(500)
     expect(res.status).toHaveBeenCalledTimes(1)
-    expect(res.json).toHaveBeenCalledWith({ error: 'Any Error' })
+    expect(res.json).toHaveBeenCalledWith({ error: 'any error' })
     expect(res.json).toHaveBeenCalledTimes(1)
   })
 
   test('Should respond with other correct error and statusCode', async () => {
     const { sut, middleware } = makeSut()
-    middleware.handle.mockResolvedValueOnce({ statusCode: 400, data: { error: 'Other Error' } })
+    middleware.handle.mockResolvedValueOnce({ statusCode: 400, data: new Error('other error') })
     const req = getMockReq()
     const { res, next } = getMockRes()
     await sut(req, res, next)
     expect(res.status).toHaveBeenCalledWith(400)
     expect(res.status).toHaveBeenCalledTimes(1)
-    expect(res.json).toHaveBeenCalledWith({ error: 'Other Error' })
+    expect(res.json).toHaveBeenCalledWith({ error: 'other error' })
     expect(res.json).toHaveBeenCalledTimes(1)
   })
 
