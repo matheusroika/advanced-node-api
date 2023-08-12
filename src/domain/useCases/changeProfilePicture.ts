@@ -12,11 +12,16 @@ export class ChangeProfilePictureUseCase implements ChangeProfilePicture {
 
   async change ({ userId, file }: ChangeProfilePicture.Params): Promise<void> {
     let pictureUrl: string | undefined
+    let initials: string | undefined
     if (file) {
       pictureUrl = await this.fileStorage.upload({ file, key: this.crypto.uuid({ key: userId }) })
     } else {
-      await this.userProfileRepository.load({ id: userId })
+      const { name } = await this.userProfileRepository.load({ id: userId })
+      if (name) {
+        const nameArray = name.split(' ').map(n => n[0])
+        initials = nameArray[0] + nameArray[nameArray.length - 1]
+      }
     }
-    await this.userProfileRepository.savePicture({ pictureUrl })
+    await this.userProfileRepository.savePicture({ pictureUrl, initials })
   }
 }
