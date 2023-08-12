@@ -49,4 +49,11 @@ describe('Change Profile Picture Use Case', () => {
     expect(userProfileRepository.savePicture).toHaveBeenCalledWith({ pictureUrl: 'any_url' })
     expect(userProfileRepository.savePicture).toHaveBeenCalledTimes(1)
   })
+
+  test('Should call SaveUserPicture with correct params when file is undefined', async () => {
+    const { sut, userProfileRepository } = makeSut()
+    await sut.change({ userId: 'any_id', file: undefined as any })
+    expect(userProfileRepository.savePicture).toHaveBeenCalledWith({ pictureUrl: undefined })
+    expect(userProfileRepository.savePicture).toHaveBeenCalledTimes(1)
+  })
 })
