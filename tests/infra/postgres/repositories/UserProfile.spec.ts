@@ -69,5 +69,11 @@ describe('Postgres User Profile Repository', () => {
       const user = await sut.load({ id: id.toString() })
       expect(user?.name).toBeUndefined()
     })
+
+    test('Should return undefined if user is not found', async () => {
+      const { sut } = makeSut()
+      const user = await sut.load({ id: '1' })
+      expect(user).toBeUndefined()
+    })
   })
 })
