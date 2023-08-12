@@ -13,4 +13,10 @@ export class PostgresUser extends BaseEntity {
 
   @Column({ nullable: true })
     facebookId?: string
+
+  @Column({ nullable: true })
+    pictureUrl?: string
+
+  @Column({ nullable: true })
+    initials?: string
 }

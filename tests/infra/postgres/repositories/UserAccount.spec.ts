@@ -64,7 +64,7 @@ describe('Postgres User Account Repository', () => {
       const { sut } = makeSut()
       const { id } = await sut.saveWithFacebook({ id: '1', email: 'other@email.com', name: 'Other Name', facebookId: 'other_fb_id' })
       const postgresUser = await PostgresUser.findOne({ where: { id: 1 } })
-      expect(postgresUser).toEqual({ id: 1, email: 'any@email.com', name: 'Other Name', facebookId: 'other_fb_id' })
+      expect(postgresUser).toMatchObject({ id: 1, email: 'any@email.com', name: 'Other Name', facebookId: 'other_fb_id' })
       expect(id).toBe('1')
     })
   })
