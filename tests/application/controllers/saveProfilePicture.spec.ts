@@ -10,6 +10,7 @@ type Sut = {
 
 const makeSut = (): Sut => {
   const changeProfilePicture = mock<ChangeProfilePicture>()
+  changeProfilePicture.change.mockResolvedValue({ initials: 'any_initials', pictureUrl: 'any_url' })
   const sut = new SaveProfilePictureController(changeProfilePicture)
   return {
     sut,
@@ -101,5 +102,14 @@ describe('Save Profile Picture Controller', () => {
     await sut.handle({ file, userId })
     expect(changeProfilePicture.change).toHaveBeenCalledWith({ userId, file: buffer })
     expect(changeProfilePicture.change).toHaveBeenCalledTimes(1)
+  })
+
+  test('Should return 200 with valid data', async () => {
+    const { sut } = makeSut()
+    const httpResponse = await sut.handle({ file, userId })
+    expect(httpResponse).toEqual({
+      statusCode: 200,
+      data: { initials: 'any_initials', pictureUrl: 'any_url' }
+    })
   })
 })
