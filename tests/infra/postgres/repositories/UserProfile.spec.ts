@@ -54,4 +54,13 @@ describe('Postgres User Profile Repository', () => {
       expect(user?.initials).toBe('TN')
     })
   })
+
+  describe('LoadUserProfile', () => {
+    test('Should load user profile', async () => {
+      const { sut } = makeSut()
+      const { id } = await PostgresUser.save({ email: 'any@email.com', name: 'Any Name' })
+      const user = await sut.load({ id: id.toString() })
+      expect(user?.name).toBe('Any Name')
+    })
+  })
 })
