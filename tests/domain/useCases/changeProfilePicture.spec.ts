@@ -1,30 +1,12 @@
 import { ChangeProfilePictureUseCase } from '@/domain/useCases'
 import { type MockProxy, mock } from 'jest-mock-extended'
+import type { UploadFile } from '@/domain/contracts/gateways'
+import type { UUIDGenerator } from '@/domain/contracts/crypto'
 
 type Sut = {
   sut: ChangeProfilePictureUseCase
   fileStorage: MockProxy<UploadFile>
   crypto: MockProxy<UUIDGenerator>
-}
-
-export interface UploadFile {
-  upload: (params: UploadFile.Params) => Promise<void>
-}
-
-export namespace UploadFile {
-  export type Params = {
-    file: Buffer
-    key: string
-  }
-}
-
-export interface UUIDGenerator {
-  uuid: (params: UUIDGenerator.Params) => UUIDGenerator.Result
-}
-
-export namespace UUIDGenerator {
-  export type Params = { key: string }
-  export type Result = string
 }
 
 const makeSut = (): Sut => {

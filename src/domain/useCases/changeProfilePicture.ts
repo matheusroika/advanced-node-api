@@ -1,5 +1,6 @@
 import type { ChangeProfilePicture } from '@/domain/features'
-import type { UUIDGenerator, UploadFile } from '@/tests/domain/useCases/changeProfilePicture.spec'
+import type { UploadFile } from '@/domain/contracts/gateways'
+import type { UUIDGenerator } from '@/domain/contracts/crypto'
 
 export class ChangeProfilePictureUseCase implements ChangeProfilePicture {
   constructor (
