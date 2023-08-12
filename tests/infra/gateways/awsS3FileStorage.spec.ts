@@ -13,8 +13,8 @@ describe('AWS S3 File Storage', () => {
 
   test('Should configure AWS credentials on creation', () => {
     const sut = new AwsS3FileStorage(accessKey, secret, bucket)
-    const S3ClientInstance = mocked(S3Client).mock.instances[0]
-    expect(sut.client).toEqual(S3ClientInstance)
+    const s3ClientInstance = mocked(S3Client).mock.instances[0]
+    expect(sut.client).toEqual(s3ClientInstance)
     expect(S3Client).toHaveBeenCalledTimes(1)
     expect(S3Client).toHaveBeenCalledWith({
       credentials: {
@@ -34,5 +34,13 @@ describe('AWS S3 File Storage', () => {
       Body: file,
       ACL: 'public-read'
     })
+  })
+
+  test('Should call S3Client.send with correct params', async () => {
+    const sut = new AwsS3FileStorage(accessKey, secret, bucket)
+    await sut.upload({ key, file })
+    const putObjectCommandInstance = mocked(PutObjectCommand).mock.instances[0]
+    expect(sut.client.send).toHaveBeenCalledTimes(1)
+    expect(sut.client.send).toHaveBeenCalledWith(putObjectCommandInstance)
   })
 })
