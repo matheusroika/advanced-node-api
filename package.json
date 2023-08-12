@@ -27,7 +27,8 @@
     "jsonwebtoken": "^9.0.1",
     "pg": "^8.11.2",
     "reflect-metadata": "^0.1.13",
-    "typeorm": "^0.3.17"
+    "typeorm": "^0.3.17",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@jest-mock/express": "^2.0.2",
@@ -37,6 +38,7 @@
     "@types/jsonwebtoken": "^9.0.2",
     "@types/node": "^20.4.8",
     "@types/supertest": "^2.0.12",
+    "@types/uuid": "^9.0.2",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "eslint": "^8.46.0",
     "eslint-config-standard-with-typescript": "^37.0.0",
