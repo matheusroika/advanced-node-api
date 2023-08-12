@@ -74,6 +74,14 @@ describe('Change Profile Picture Use Case', () => {
     expect(userProfileRepository.savePicture).toHaveBeenCalledTimes(1)
   })
 
+  test('Should call SaveUserPicture with correct initials when name has only one letter', async () => {
+    const { sut, userProfileRepository } = makeSut()
+    userProfileRepository.load.mockResolvedValueOnce({ name: 't' })
+    await sut.change({ userId: 'any_id', file: undefined as any })
+    expect(userProfileRepository.savePicture).toHaveBeenCalledWith({ pictureUrl: undefined, initials: 'T' })
+    expect(userProfileRepository.savePicture).toHaveBeenCalledTimes(1)
+  })
+
   test('Should call LoadUserProfile with correct params', async () => {
     const { sut, userProfileRepository } = makeSut()
     await sut.change({ userId: 'any_id', file: undefined as any })
