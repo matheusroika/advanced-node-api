@@ -17,6 +17,7 @@ const makeSut = (): Sut => {
   const userProfileRepository = mock<SaveUserPicture & LoadUserProfile>()
   fileStorage.upload.mockResolvedValue('any_url')
   crypto.uuid.mockReturnValue('any_unique_id')
+  userProfileRepository.load.mockResolvedValue({ name: 'Test Super Name' })
   const sut = new ChangeProfilePictureUseCase(fileStorage, crypto, userProfileRepository)
   return {
     sut,
@@ -53,7 +54,7 @@ describe('Change Profile Picture Use Case', () => {
   test('Should call SaveUserPicture with correct params when file is undefined', async () => {
     const { sut, userProfileRepository } = makeSut()
     await sut.change({ userId: 'any_id', file: undefined as any })
-    expect(userProfileRepository.savePicture).toHaveBeenCalledWith({ pictureUrl: undefined })
+    expect(userProfileRepository.savePicture).toHaveBeenCalledWith({ pictureUrl: undefined, initials: 'TN' })
     expect(userProfileRepository.savePicture).toHaveBeenCalledTimes(1)
   })
 
