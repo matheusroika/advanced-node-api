@@ -1,8 +1,12 @@
-import { ChangeProfilePictureUseCase } from '@/domain/useCases'
+import { mocked } from 'jest-mock'
 import { type MockProxy, mock } from 'jest-mock-extended'
+import { ChangeProfilePictureUseCase } from '@/domain/useCases'
+import { UserProfile } from '@/domain/entities'
 import type { UploadFile } from '@/domain/contracts/gateways'
 import type { UUIDGenerator } from '@/domain/contracts/crypto'
 import type { LoadUserProfile, SaveUserPicture } from '@/domain/contracts/repositories'
+
+jest.mock('@/domain/entities/UserProfile')
 
 type Sut = {
   sut: ChangeProfilePictureUseCase
@@ -47,46 +51,8 @@ describe('Change Profile Picture Use Case', () => {
   test('Should call SaveUserPicture with correct params', async () => {
     const { sut, userProfileRepository } = makeSut()
     await sut.change({ userId: 'any_id', file: Buffer.from('any_buffer') })
-    expect(userProfileRepository.savePicture).toHaveBeenCalledWith({ pictureUrl: 'any_url', initials: undefined })
-    expect(userProfileRepository.savePicture).toHaveBeenCalledTimes(1)
-  })
-
-  test('Should call SaveUserPicture with correct params when file is undefined', async () => {
-    const { sut, userProfileRepository } = makeSut()
-    await sut.change({ userId: 'any_id', file: undefined as any })
-    expect(userProfileRepository.savePicture).toHaveBeenCalledWith({ pictureUrl: undefined, initials: 'TN' })
-    expect(userProfileRepository.savePicture).toHaveBeenCalledTimes(1)
-  })
-
-  test('Should call SaveUserPicture with correct initials when name is in lower case', async () => {
-    const { sut, userProfileRepository } = makeSut()
-    userProfileRepository.load.mockResolvedValueOnce({ name: 'test super name' })
-    await sut.change({ userId: 'any_id', file: undefined as any })
-    expect(userProfileRepository.savePicture).toHaveBeenCalledWith({ pictureUrl: undefined, initials: 'TN' })
-    expect(userProfileRepository.savePicture).toHaveBeenCalledTimes(1)
-  })
-
-  test('Should call SaveUserPicture with correct initials when user has no surname', async () => {
-    const { sut, userProfileRepository } = makeSut()
-    userProfileRepository.load.mockResolvedValueOnce({ name: 'test' })
-    await sut.change({ userId: 'any_id', file: undefined as any })
-    expect(userProfileRepository.savePicture).toHaveBeenCalledWith({ pictureUrl: undefined, initials: 'TE' })
-    expect(userProfileRepository.savePicture).toHaveBeenCalledTimes(1)
-  })
-
-  test('Should call SaveUserPicture with correct initials when name has only one letter', async () => {
-    const { sut, userProfileRepository } = makeSut()
-    userProfileRepository.load.mockResolvedValueOnce({ name: 't' })
-    await sut.change({ userId: 'any_id', file: undefined as any })
-    expect(userProfileRepository.savePicture).toHaveBeenCalledWith({ pictureUrl: undefined, initials: 'T' })
-    expect(userProfileRepository.savePicture).toHaveBeenCalledTimes(1)
-  })
-
-  test('Should call SaveUserPicture with undefined initials when user has no name', async () => {
-    const { sut, userProfileRepository } = makeSut()
-    userProfileRepository.load.mockResolvedValueOnce({ name: undefined })
-    await sut.change({ userId: 'any_id', file: undefined as any })
-    expect(userProfileRepository.savePicture).toHaveBeenCalledWith({ pictureUrl: undefined, initials: undefined })
+    const userProfileInstance = mocked(UserProfile).mock.instances[0]
+    expect(userProfileRepository.savePicture).toHaveBeenCalledWith(userProfileInstance)
     expect(userProfileRepository.savePicture).toHaveBeenCalledTimes(1)
   })
 
