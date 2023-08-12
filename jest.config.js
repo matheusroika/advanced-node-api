@@ -19,5 +19,6 @@ module.exports = {
     '@/(.*)': '<rootDir>/src/$1'
   },
   testMatch: ['**/*.spec.ts'],
-  setupFiles: ['<rootDir>/tests/setupTests.ts']
+  setupFiles: ['<rootDir>/tests/setupTests.ts'],
+  clearMocks: true
 }
