@@ -63,4 +63,10 @@ describe('Change Profile Picture Use Case', () => {
     expect(userProfileRepository.load).toHaveBeenCalledWith({ id: 'any_id' })
     expect(userProfileRepository.load).toHaveBeenCalledTimes(1)
   })
+
+  test('Should not call LoadUserProfile when file is valid', async () => {
+    const { sut, userProfileRepository } = makeSut()
+    await sut.change({ userId: 'any_id', file: Buffer.from('any_buffer') })
+    expect(userProfileRepository.load).not.toHaveBeenCalled()
+  })
 })
