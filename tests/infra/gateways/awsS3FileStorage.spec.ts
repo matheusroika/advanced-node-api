@@ -43,4 +43,16 @@ describe('AWS S3 File Storage', () => {
     expect(sut.client.send).toHaveBeenCalledTimes(1)
     expect(sut.client.send).toHaveBeenCalledWith(putObjectCommandInstance)
   })
+
+  test('Should return image url on S3Client.send success', async () => {
+    const sut = new AwsS3FileStorage(accessKey, secret, bucket)
+    const imageUrl = await sut.upload({ key, file })
+    expect(imageUrl).toBe(`https://${bucket}.s3.amazonaws.com/${key}`)
+  })
+
+  test('Should return image url on S3Client.send success', async () => {
+    const sut = new AwsS3FileStorage(accessKey, secret, bucket)
+    const imageUrl = await sut.upload({ key: 'any key', file })
+    expect(imageUrl).toBe(`https://${bucket}.s3.amazonaws.com/any%20key`)
+  })
 })
