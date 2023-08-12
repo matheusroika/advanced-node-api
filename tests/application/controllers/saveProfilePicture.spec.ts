@@ -1,5 +1,5 @@
 import { type MockProxy, mock } from 'jest-mock-extended'
-import { SaveProfilePictureController } from '@/application/controllers'
+import { Controller, SaveProfilePictureController } from '@/application/controllers'
 import { InvalidMimeTypeError, MaxFileSizeError, RequiredFieldError } from '@/application/errors'
 import type { ChangeProfilePicture } from '@/domain/features'
 
@@ -23,6 +23,11 @@ describe('Save Profile Picture Controller', () => {
   const mimeType = 'image/png'
   const file = { buffer, mimeType }
   const userId = 'any_user_id'
+
+  test('Should extend Controller', async () => {
+    const { sut } = makeSut()
+    expect(sut).toBeInstanceOf(Controller)
+  })
 
   test('Should return 400 if file is not provided', async () => {
     const { sut } = makeSut()
