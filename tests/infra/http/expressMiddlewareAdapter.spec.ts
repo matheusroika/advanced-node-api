@@ -9,7 +9,11 @@ type Adapter = (req: Request, res: Response, next: NextFunction) => Promise<any>
 const adaptExpressMiddleware = (middleware: Middleware): RequestHandler => {
   return async (req, res, next) => {
     const { statusCode, data } = await middleware.handle({ ...req.headers })
-    res.status(statusCode).json(data)
+    if (statusCode !== 200) res.status(statusCode).json(data)
+    else {
+      req.locals = { ...req.locals, ...data }
+      next()
+    }
   }
 }
 
@@ -24,7 +28,7 @@ type Sut = {
 
 const makeSut = (): Sut => {
   const middleware = mock<Middleware>()
-  middleware.handle.mockResolvedValue({ statusCode: 500, data: { error: 'Any Error' } })
+  middleware.handle.mockResolvedValue({ statusCode: 200, data: { data: 'any_data' } })
   const sut = adaptExpressMiddleware(middleware) as Adapter
   return {
     sut,
@@ -52,7 +56,8 @@ describe('Express Middleware Adapter', () => {
   })
 
   test('Should respond with correct error and statusCode', async () => {
-    const { sut } = makeSut()
+    const { sut, middleware } = makeSut()
+    middleware.handle.mockResolvedValueOnce({ statusCode: 500, data: { error: 'Any Error' } })
     const req = getMockReq()
     const { res, next } = getMockRes()
     await sut(req, res, next)
@@ -60,5 +65,14 @@ describe('Express Middleware Adapter', () => {
     expect(res.status).toHaveBeenCalledTimes(1)
     expect(res.json).toHaveBeenCalledWith({ error: 'Any Error' })
     expect(res.json).toHaveBeenCalledTimes(1)
+  })
+
+  test('Should add data to req.locals on Middleware.handle success', async () => {
+    const { sut } = makeSut()
+    const req = getMockReq()
+    const { res, next } = getMockRes()
+    await sut(req, res, next)
+    expect(req.locals).toEqual({ data: 'any_data' })
+    expect(next).toHaveBeenCalledTimes(1)
   })
 })
