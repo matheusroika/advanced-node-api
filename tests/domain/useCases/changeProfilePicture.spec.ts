@@ -46,7 +46,7 @@ describe('Change Profile Picture Use Case', () => {
   test('Should call SaveUserPicture with correct params', async () => {
     const { sut, userProfileRepository } = makeSut()
     await sut.change({ userId: 'any_id', file: Buffer.from('any_buffer') })
-    expect(userProfileRepository.savePicture).toHaveBeenCalledWith({ pictureUrl: 'any_url' })
+    expect(userProfileRepository.savePicture).toHaveBeenCalledWith({ pictureUrl: 'any_url', initials: undefined })
     expect(userProfileRepository.savePicture).toHaveBeenCalledTimes(1)
   })
 
