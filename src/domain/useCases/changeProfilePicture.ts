@@ -25,7 +25,8 @@ export class ChangeProfilePictureUseCase implements ChangeProfilePicture {
     try {
       await this.userProfileRepository.savePicture(userProfile)
     } catch (error) {
-      await this.fileStorage.delete({ key })
+      if (file) await this.fileStorage.delete({ key })
+      throw new Error()
     }
     return userProfile
   }
