@@ -77,5 +77,13 @@ describe('AWS S3 File Storage', () => {
         Key: key
       })
     })
+
+    test('Should call S3Client.send with correct params', async () => {
+      const sut = new AwsS3FileStorage(accessKey, secret, bucket)
+      await sut.delete({ key })
+      const deleteObjectCommandInstance = mocked(DeleteObjectCommand).mock.instances[0]
+      expect(sut.client.send).toHaveBeenCalledTimes(1)
+      expect(sut.client.send).toHaveBeenCalledWith(deleteObjectCommandInstance)
+    })
   })
 })
