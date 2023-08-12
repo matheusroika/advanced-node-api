@@ -1,5 +1,5 @@
 export interface ChangeProfilePicture {
-  change: (params: ChangeProfilePicture.Params) => Promise<void>
+  change: (params: ChangeProfilePicture.Params) => Promise<ChangeProfilePicture.Result>
 }
 
 export namespace ChangeProfilePicture {
@@ -9,6 +9,7 @@ export namespace ChangeProfilePicture {
   }
 
   export type Result = {
-    accessToken: string
+    pictureUrl?: string
+    initials?: string
   }
 }

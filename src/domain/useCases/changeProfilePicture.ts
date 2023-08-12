@@ -11,7 +11,7 @@ export class ChangeProfilePictureUseCase implements ChangeProfilePicture {
     private readonly userProfileRepository: SaveUserPicture & LoadUserProfile
   ) {}
 
-  async change ({ userId, file }: ChangeProfilePicture.Params): Promise<void> {
+  async change ({ userId, file }: ChangeProfilePicture.Params): Promise<ChangeProfilePicture.Result> {
     let pictureUrl: string | undefined
     let name: string | undefined
     if (file) {
@@ -22,5 +22,6 @@ export class ChangeProfilePictureUseCase implements ChangeProfilePicture {
     const userProfile = new UserProfile(userId)
     userProfile.setPicture({ pictureUrl, name })
     await this.userProfileRepository.savePicture(userProfile)
+    return userProfile
   }
 }
