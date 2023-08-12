@@ -67,6 +67,18 @@ describe('Express Middleware Adapter', () => {
     expect(res.json).toHaveBeenCalledTimes(1)
   })
 
+  test('Should respond with other correct error and statusCode', async () => {
+    const { sut, middleware } = makeSut()
+    middleware.handle.mockResolvedValueOnce({ statusCode: 400, data: { error: 'Other Error' } })
+    const req = getMockReq()
+    const { res, next } = getMockRes()
+    await sut(req, res, next)
+    expect(res.status).toHaveBeenCalledWith(400)
+    expect(res.status).toHaveBeenCalledTimes(1)
+    expect(res.json).toHaveBeenCalledWith({ error: 'Other Error' })
+    expect(res.json).toHaveBeenCalledTimes(1)
+  })
+
   test('Should add data to req.locals on Middleware.handle success', async () => {
     const { sut } = makeSut()
     const req = getMockReq()
