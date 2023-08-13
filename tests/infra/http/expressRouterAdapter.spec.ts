@@ -24,10 +24,10 @@ const makeSut = (): Sut => {
 describe('Express Router Adapter', () => {
   test('Should call Controller handle with correct request', async () => {
     const { sut, controller } = makeSut()
-    const req = getMockReq({ body: { data: 'any_data' } })
+    const req = getMockReq({ body: { anyBody: 'any_body' }, locals: { anyLocals: 'any_locals' } })
     const { res, next } = getMockRes()
     await sut(req, res, next)
-    expect(controller.handle).toHaveBeenCalledWith({ data: 'any_data' })
+    expect(controller.handle).toHaveBeenCalledWith({ anyBody: 'any_body', anyLocals: 'any_locals' })
     expect(controller.handle).toHaveBeenCalledTimes(1)
   })
 
@@ -47,6 +47,18 @@ describe('Express Router Adapter', () => {
     await sut(req, res, next)
     expect(res.status).toHaveBeenCalledWith(200)
     expect(res.json).toHaveBeenCalledWith({ data: 'any_data' })
+    expect(res.status).toHaveBeenCalledTimes(1)
+    expect(res.json).toHaveBeenCalledTimes(1)
+  })
+
+  test('Should call res.status.json if Controller handle returns statusCode 204', async () => {
+    const { sut, controller } = makeSut()
+    controller.handle.mockResolvedValue({ statusCode: 204, data: {} })
+    const req = getMockReq()
+    const { res, next } = getMockRes()
+    await sut(req, res, next)
+    expect(res.status).toHaveBeenCalledWith(204)
+    expect(res.json).toHaveBeenCalledWith({})
     expect(res.status).toHaveBeenCalledTimes(1)
     expect(res.json).toHaveBeenCalledTimes(1)
   })
