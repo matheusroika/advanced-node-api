@@ -33,7 +33,10 @@ export class ChangeProfilePictureUseCase implements ChangeProfilePicture {
       }
       throw error
     }
-    return userProfile
+    return {
+      initials: userProfile.initials,
+      pictureUrl: userProfile.pictureUrl
+    }
   }
 
   private getFilename (userId: string, mimeType: string): string {

@@ -9,6 +9,7 @@ type Sut = {
 
 const makeSut = (): Sut => {
   const changeProfilePicture = mock<ChangeProfilePicture>()
+  changeProfilePicture.change.mockResolvedValue({ initials: 'any_initials' })
   const sut = new DeleteProfilePictureController(changeProfilePicture)
   return {
     sut,
@@ -29,9 +30,12 @@ describe('Delete Profile Picture Controller', () => {
     expect(changeProfilePicture.change).toHaveBeenCalledTimes(1)
   })
 
-  test('Should return 204 on success', async () => {
+  test('Should return 200 with valid data', async () => {
     const { sut } = makeSut()
     const httpResponse = await sut.handle({ userId: 'any_user_id' })
-    expect(httpResponse).toEqual({ statusCode: 204 })
+    expect(httpResponse).toEqual({
+      statusCode: 200,
+      data: { initials: 'any_initials' }
+    })
   })
 })

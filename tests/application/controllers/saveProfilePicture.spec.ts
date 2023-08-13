@@ -10,7 +10,7 @@ type Sut = {
 
 const makeSut = (): Sut => {
   const changeProfilePicture = mock<ChangeProfilePicture>()
-  changeProfilePicture.change.mockResolvedValue({ initials: 'any_initials', pictureUrl: 'any_url' })
+  changeProfilePicture.change.mockResolvedValue({ pictureUrl: 'any_url' })
   const sut = new SaveProfilePictureController(changeProfilePicture)
   return {
     sut,
@@ -54,7 +54,7 @@ describe('Save Profile Picture Controller', () => {
     const httpResponse = await sut.handle({ file, userId })
     expect(httpResponse).toEqual({
       statusCode: 200,
-      data: { initials: 'any_initials', pictureUrl: 'any_url' }
+      data: { pictureUrl: 'any_url' }
     })
   })
 })

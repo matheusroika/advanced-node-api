@@ -33,14 +33,24 @@ describe('User Routes', () => {
       expect(status).toBe(403)
     })
 
-    test('Should return 204', async () => {
+    test('Should return 200 with empty body if name is undefined', async () => {
       const { id } = await PostgresUser.save({ email: 'any@email.com' })
       const authorization = jwt.sign({ key: id }, process.env.JWT_SECRET as string)
       const { status, body } = await request(app)
         .delete('/api/user/picture')
         .set({ authorization })
-      expect(status).toBe(204)
+      expect(status).toBe(200)
       expect(body).toEqual({})
+    })
+
+    test('Should return 200 with initials if name is valid', async () => {
+      const { id } = await PostgresUser.save({ email: 'any@email.com', name: 'any name' })
+      const authorization = jwt.sign({ key: id }, process.env.JWT_SECRET as string)
+      const { status, body } = await request(app)
+        .delete('/api/user/picture')
+        .set({ authorization })
+      expect(status).toBe(200)
+      expect(body).toEqual({ initials: 'AN' })
     })
   })
 })
