@@ -1,17 +1,19 @@
 import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3'
 import { mocked } from 'jest-mock'
-import { AwsS3FileStorage } from '@/infra/gateways'
+import { type AwsRegion, AwsS3FileStorage } from '@/infra/gateways'
 
 jest.mock('@aws-sdk/client-s3')
 
 describe('AWS S3 File Storage', () => {
   const accessKey = 'any_access_key'
   const secret = 'any_secret'
+  const region: AwsRegion = 'us-east-2'
+  const config = { accessKey, secret, region }
   const bucket = 'any_bucket'
   const key = 'any_key'
 
   test('Should configure AWS credentials on creation', () => {
-    const sut = new AwsS3FileStorage(accessKey, secret, bucket)
+    const sut = new AwsS3FileStorage(config, bucket)
     const s3ClientInstance = mocked(S3Client).mock.instances[0]
     expect(sut.client).toEqual(s3ClientInstance)
     expect(S3Client).toHaveBeenCalledTimes(1)
@@ -19,7 +21,8 @@ describe('AWS S3 File Storage', () => {
       credentials: {
         accessKeyId: accessKey,
         secretAccessKey: secret
-      }
+      },
+      region
     })
   })
 
@@ -27,7 +30,7 @@ describe('AWS S3 File Storage', () => {
     const file = Buffer.from('any_buffer')
 
     test('Should call PutObjectCommand with correct params', async () => {
-      const sut = new AwsS3FileStorage(accessKey, secret, bucket)
+      const sut = new AwsS3FileStorage(config, bucket)
       await sut.upload({ key, file })
       expect(PutObjectCommand).toHaveBeenCalledTimes(1)
       expect(PutObjectCommand).toHaveBeenCalledWith({
@@ -39,7 +42,7 @@ describe('AWS S3 File Storage', () => {
     })
 
     test('Should call S3Client.send with correct params', async () => {
-      const sut = new AwsS3FileStorage(accessKey, secret, bucket)
+      const sut = new AwsS3FileStorage(config, bucket)
       await sut.upload({ key, file })
       const putObjectCommandInstance = mocked(PutObjectCommand).mock.instances[0]
       expect(sut.client.send).toHaveBeenCalledTimes(1)
@@ -47,19 +50,19 @@ describe('AWS S3 File Storage', () => {
     })
 
     test('Should return image url on S3Client.send success', async () => {
-      const sut = new AwsS3FileStorage(accessKey, secret, bucket)
+      const sut = new AwsS3FileStorage(config, bucket)
       const imageUrl = await sut.upload({ key, file })
       expect(imageUrl).toBe(`https://${bucket}.s3.amazonaws.com/${key}`)
     })
 
     test('Should return image url on S3Client.send success', async () => {
-      const sut = new AwsS3FileStorage(accessKey, secret, bucket)
+      const sut = new AwsS3FileStorage(config, bucket)
       const imageUrl = await sut.upload({ key: 'any key', file })
       expect(imageUrl).toBe(`https://${bucket}.s3.amazonaws.com/any%20key`)
     })
 
     test('Should throw if S3Client.send throws', async () => {
-      const sut = new AwsS3FileStorage(accessKey, secret, bucket)
+      const sut = new AwsS3FileStorage(config, bucket)
       const error = new Error('s3 error')
       mocked(sut.client).send.mockImplementationOnce(() => { throw error })
       const promise = sut.upload({ key, file })
@@ -69,7 +72,7 @@ describe('AWS S3 File Storage', () => {
 
   describe('DeleteFile', () => {
     test('Should call DeleteObjectCommand with correct params', async () => {
-      const sut = new AwsS3FileStorage(accessKey, secret, bucket)
+      const sut = new AwsS3FileStorage(config, bucket)
       await sut.delete({ key })
       expect(DeleteObjectCommand).toHaveBeenCalledTimes(1)
       expect(DeleteObjectCommand).toHaveBeenCalledWith({
@@ -79,7 +82,7 @@ describe('AWS S3 File Storage', () => {
     })
 
     test('Should call S3Client.send with correct params', async () => {
-      const sut = new AwsS3FileStorage(accessKey, secret, bucket)
+      const sut = new AwsS3FileStorage(config, bucket)
       await sut.delete({ key })
       const deleteObjectCommandInstance = mocked(DeleteObjectCommand).mock.instances[0]
       expect(sut.client.send).toHaveBeenCalledTimes(1)
@@ -87,7 +90,7 @@ describe('AWS S3 File Storage', () => {
     })
 
     test('Should throw if S3Client.send throws', async () => {
-      const sut = new AwsS3FileStorage(accessKey, secret, bucket)
+      const sut = new AwsS3FileStorage(config, bucket)
       const error = new Error('s3 error')
       mocked(sut.client).send.mockImplementationOnce(() => { throw error })
       const promise = sut.delete({ key })
