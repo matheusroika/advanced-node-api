@@ -8,6 +8,7 @@ export class MaxFileSizeValidator implements Validator {
   ) {}
 
   validate (): Error | undefined {
-    if (this.file.length > this.maxSizeInMb * 1024 * 1024) return new MaxFileSizeError(1)
+    const maxSizeInBytes = this.maxSizeInMb * 1024 * 1024
+    if (this.file.length > maxSizeInBytes) return new MaxFileSizeError(this.maxSizeInMb)
   }
 }
