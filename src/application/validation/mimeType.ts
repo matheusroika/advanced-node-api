@@ -9,8 +9,8 @@ export enum AllowedExtensions {
 
 export class MimeTypeValidator implements Validator {
   constructor (
-    private readonly allowed: Array<keyof typeof AllowedExtensions>,
-    private readonly mimeType: string
+    private readonly mimeType: string,
+    private readonly allowed: Array<keyof typeof AllowedExtensions> = ['jpeg', 'jpg', 'png']
   ) {}
 
   validate (): Error | undefined {

@@ -30,7 +30,7 @@ export class SaveProfilePictureController extends Controller {
   override getValidators ({ file }: HttpRequest): Validator[] {
     return [
       ...ValidationBuilder.of(file, 'image').required().build(),
-      ...ValidationBuilder.of(file.mimeType, 'image mime type').required().mimeType(['jpeg', 'jpg', 'png']).build(),
+      ...ValidationBuilder.of(file.mimeType, 'image mime type').required().mimeType().build(),
       ...ValidationBuilder.of(file.buffer, 'image content').required().requiredBuffer().maxFileSize(1).build()
     ]
   }

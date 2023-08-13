@@ -35,7 +35,7 @@ describe('Save Profile Picture Controller', () => {
     expect(validators).toEqual([
       new RequiredValidator(file, 'image'),
       new RequiredValidator(mimeType, 'image mime type'),
-      new MimeTypeValidator(['jpeg', 'jpg', 'png'], mimeType),
+      new MimeTypeValidator(mimeType),
       new RequiredValidator(buffer, 'image content'),
       new RequiredBufferValidator(buffer, 'image content'),
       new MaxFileSizeValidator(1, buffer)

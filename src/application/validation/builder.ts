@@ -21,8 +21,8 @@ export class ValidationBuilder {
     return this
   }
 
-  mimeType (allowed: Array<keyof typeof AllowedExtensions>): ValidationBuilder {
-    this.validators.push(new MimeTypeValidator(allowed, this.value))
+  mimeType (allowed?: Array<keyof typeof AllowedExtensions>): ValidationBuilder {
+    this.validators.push(new MimeTypeValidator(this.value, allowed))
     return this
   }
 
