@@ -55,6 +55,10 @@ describe('Multer Adapter', () => {
       anyLocals: 'any_locals',
       file: { buffer: Buffer.from('any_buffer'), mimeType: 'any_type' }
     })
+  })
+
+  test('Should call next', () => {
+    sut(req, res, next)
     expect(next).toHaveBeenCalledWith()
     expect(next).toHaveBeenCalledTimes(1)
   })
