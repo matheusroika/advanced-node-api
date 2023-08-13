@@ -7,14 +7,21 @@ jest.mock('multer')
 
 describe('Multer Adapter', () => {
   const multerSpy = multer as unknown as jest.Mock
-  const uploadSpy = jest.fn()
+  const uploadSpy = jest.fn().mockImplementation((req, res, next) => {
+    req.file = { buffer: Buffer.from('any_buffer'), mimetype: 'any_type' }
+    next()
+  })
   const singleSpy = jest.fn().mockImplementation(() => uploadSpy)
   multerSpy.mockImplementation(() => ({
     single: singleSpy
   }))
-  const req = getMockReq({ locals: { anyLocals: 'any_locals' } })
+  let req = getMockReq({ locals: { anyLocals: 'any_locals' } })
   const { res, next } = getMockRes()
   const sut = adaptMulter
+
+  beforeEach(() => {
+    req = getMockReq({ locals: { anyLocals: 'any_locals' } })
+  })
 
   test('Should call single upload with correct params', () => {
     sut(req, res, next)
@@ -40,5 +47,15 @@ describe('Multer Adapter', () => {
     uploadSpy.mockImplementationOnce((req, res, next) => { next() })
     sut(req, res, next)
     expect(req.locals).toEqual({ anyLocals: 'any_locals' })
+  })
+
+  test('Should add req.file to req.locals if file is valid', () => {
+    sut(req, res, next)
+    expect(req.locals).toEqual({
+      anyLocals: 'any_locals',
+      file: { buffer: Buffer.from('any_buffer'), mimeType: 'any_type' }
+    })
+    expect(next).toHaveBeenCalledWith()
+    expect(next).toHaveBeenCalledTimes(1)
   })
 })
