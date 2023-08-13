@@ -12,7 +12,7 @@ describe('Multer Adapter', () => {
   multerSpy.mockImplementation(() => ({
     single: singleSpy
   }))
-  const req = getMockReq()
+  const req = getMockReq({ locals: { anyLocals: 'any_locals' } })
   const { res, next } = getMockRes()
   const sut = adaptMulter
 
@@ -28,13 +28,17 @@ describe('Multer Adapter', () => {
 
   test('Should return 500 if upload fails', () => {
     const error = new Error('multer error')
-    uploadSpy.mockImplementationOnce((req, res, next) => {
-      next(error)
-    })
+    uploadSpy.mockImplementationOnce((req, res, next) => { next(error) })
     sut(req, res, next)
     expect(res.status).toHaveBeenCalledWith(500)
     expect(res.json).toHaveBeenCalledWith({ error: new ServerError(error).message })
     expect(res.status).toHaveBeenCalledTimes(1)
     expect(res.json).toHaveBeenCalledTimes(1)
+  })
+
+  test('Should not add req.file to req.locals if file is empty', () => {
+    uploadSpy.mockImplementationOnce((req, res, next) => { next() })
+    sut(req, res, next)
+    expect(req.locals).toEqual({ anyLocals: 'any_locals' })
   })
 })
