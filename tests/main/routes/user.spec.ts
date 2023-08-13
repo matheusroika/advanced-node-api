@@ -1,4 +1,5 @@
 import request from 'supertest'
+import jwt from 'jsonwebtoken'
 import app from '@/main/config/app'
 import { PostgresUser } from '@/infra/postgres/entities'
 import { mockDb } from '@/tests/infra/postgres/helpers'
@@ -30,6 +31,16 @@ describe('User Routes', () => {
       const { status } = await request(app)
         .delete('/api/user/picture')
       expect(status).toBe(403)
+    })
+
+    test('Should return 204', async () => {
+      const { id } = await PostgresUser.save({ email: 'any@email.com' })
+      const authorization = jwt.sign({ key: id }, process.env.JWT_SECRET as string)
+      const { status, body } = await request(app)
+        .delete('/api/user/picture')
+        .set({ authorization })
+      expect(status).toBe(204)
+      expect(body).toEqual({})
     })
   })
 })
