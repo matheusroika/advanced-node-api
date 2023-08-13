@@ -10,11 +10,6 @@ export const ok = <Data = any> (data: Data): HttpResponse<Data> => ({
   data
 })
 
-export const noContent = (): HttpResponse<undefined> => ({
-  statusCode: 204,
-  data: undefined
-})
-
 export const badRequest = (error: Error): HttpResponse<Error> => ({
   statusCode: 400,
   data: error
