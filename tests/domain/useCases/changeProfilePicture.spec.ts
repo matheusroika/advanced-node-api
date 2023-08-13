@@ -32,14 +32,24 @@ const makeSut = (): Sut => {
 }
 
 describe('Change Profile Picture Use Case', () => {
+  const buffer = Buffer.from('any_buffer')
+  const mimeType = 'image/png'
+  const file = { buffer, mimeType }
+
   test('Should call UploadFile and UUIDGenerator with correct params', async () => {
     const { sut, fileStorage, crypto } = makeSut()
-    const file = Buffer.from('any_buffer')
     await sut.change({ userId: 'any_id', file })
-    expect(fileStorage.upload).toHaveBeenCalledWith({ file, key: 'any_unique_id' })
-    expect(fileStorage.upload).toHaveBeenCalledTimes(1)
     expect(crypto.uuid).toHaveBeenCalledWith({ key: 'any_id' })
     expect(crypto.uuid).toHaveBeenCalledTimes(1)
+    expect(fileStorage.upload).toHaveBeenCalledWith({ file: buffer, filename: 'any_unique_id.png' })
+    expect(fileStorage.upload).toHaveBeenCalledTimes(1)
+  })
+
+  test('Should call UploadFile with correct params', async () => {
+    const { sut, fileStorage } = makeSut()
+    await sut.change({ userId: 'any_id', file: { buffer, mimeType: 'image/jpeg' } })
+    expect(fileStorage.upload).toHaveBeenCalledWith({ file: buffer, filename: 'any_unique_id.jpg' })
+    expect(fileStorage.upload).toHaveBeenCalledTimes(1)
   })
 
   test('Should not call UploadFile when file is undefined', async () => {
@@ -51,7 +61,7 @@ describe('Change Profile Picture Use Case', () => {
   test('Should call SaveUserPicture with correct params', async () => {
     const { sut, userProfileRepository } = makeSut()
     userProfileRepository.load.mockResolvedValueOnce(undefined)
-    await sut.change({ userId: 'any_id', file: Buffer.from('any_buffer') })
+    await sut.change({ userId: 'any_id', file })
     const userProfileInstance = mocked(UserProfile).mock.instances[0]
     expect(userProfileRepository.savePicture).toHaveBeenCalledWith(userProfileInstance)
     expect(userProfileRepository.savePicture).toHaveBeenCalledTimes(1)
@@ -66,7 +76,7 @@ describe('Change Profile Picture Use Case', () => {
 
   test('Should not call LoadUserProfile when file is valid', async () => {
     const { sut, userProfileRepository } = makeSut()
-    await sut.change({ userId: 'any_id', file: Buffer.from('any_buffer') })
+    await sut.change({ userId: 'any_id', file })
     expect(userProfileRepository.load).not.toHaveBeenCalled()
   })
 
@@ -78,7 +88,7 @@ describe('Change Profile Picture Use Case', () => {
       pictureUrl: 'any_url',
       initials: 'TN'
     }))
-    const result = await sut.change({ userId: 'any_id', file: Buffer.from('any_buffer') })
+    const result = await sut.change({ userId: 'any_id', file })
     expect(result).toMatchObject({
       pictureUrl: 'any_url',
       initials: 'TN'
@@ -90,9 +100,9 @@ describe('Change Profile Picture Use Case', () => {
     userProfileRepository.savePicture.mockRejectedValueOnce(new Error())
     expect.assertions(2)
     try {
-      await sut.change({ userId: 'any_id', file: Buffer.from('any_buffer') })
+      await sut.change({ userId: 'any_id', file })
     } catch (error) {
-      expect(fileStorage.delete).toHaveBeenCalledWith({ key: 'any_unique_id' })
+      expect(fileStorage.delete).toHaveBeenCalledWith({ filename: 'any_unique_id.png' })
       expect(fileStorage.delete).toHaveBeenCalledTimes(1)
     }
   })
@@ -120,7 +130,7 @@ describe('Change Profile Picture Use Case', () => {
     const { sut, fileStorage } = makeSut()
     const error = new Error('upload file error')
     fileStorage.upload.mockRejectedValueOnce(error)
-    const promise = sut.change({ userId: 'any_id', file: Buffer.from('any_buffer') })
+    const promise = sut.change({ userId: 'any_id', file })
     await expect(promise).rejects.toThrow(error)
   })
 
@@ -129,7 +139,7 @@ describe('Change Profile Picture Use Case', () => {
     const error = new Error('delete file error')
     userProfileRepository.savePicture.mockRejectedValueOnce(new Error())
     fileStorage.delete.mockRejectedValueOnce(error)
-    const promise = sut.change({ userId: 'any_id', file: Buffer.from('any_buffer') })
+    const promise = sut.change({ userId: 'any_id', file })
     await expect(promise).rejects.toThrow(error)
   })
 
@@ -137,7 +147,7 @@ describe('Change Profile Picture Use Case', () => {
     const { sut, crypto } = makeSut()
     const error = new Error('uuid error')
     crypto.uuid.mockImplementationOnce(() => { throw error })
-    const promise = sut.change({ userId: 'any_id', file: Buffer.from('any_buffer') })
+    const promise = sut.change({ userId: 'any_id', file })
     await expect(promise).rejects.toThrow(error)
   })
 

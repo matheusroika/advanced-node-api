@@ -45,7 +45,7 @@ describe('Save Profile Picture Controller', () => {
   test('Should call ChangeProfilePicture with correct params', async () => {
     const { sut, changeProfilePicture } = makeSut()
     await sut.handle({ file, userId })
-    expect(changeProfilePicture.change).toHaveBeenCalledWith({ userId, file: buffer })
+    expect(changeProfilePicture.change).toHaveBeenCalledWith({ userId, file })
     expect(changeProfilePicture.change).toHaveBeenCalledTimes(1)
   })
 

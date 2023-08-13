@@ -22,21 +22,21 @@ const makeSut = (): Sut => {
 describe('AWS S3 Integration', () => {
   test('Should upload image successfully to AWS S3', async () => {
     const { sut } = makeSut()
-    const key = 'integration_test_image.png'
+    const filename = 'integration_test_image.png'
     const onePixelImage = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAA1JREFUGFdjUNF88R8AA98CNazd1XsAAAAASUVORK5CYII='
     const file = Buffer.from(onePixelImage, 'base64')
-    const pictureUrl = await sut.upload({ key, file })
+    const pictureUrl = await sut.upload({ filename, file })
     expect((await axios.get(pictureUrl)).status).toBe(200)
   })
 
   test('Should delete image successfully on AWS S3', async () => {
     const { sut } = makeSut()
-    const key = 'integration_test_deleted_image.png'
+    const filename = 'integration_test_deleted_image.png'
     const onePixelImage = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAA1JREFUGFdjUNF88R8AA98CNazd1XsAAAAASUVORK5CYII='
     const file = Buffer.from(onePixelImage, 'base64')
-    const pictureUrl = await sut.upload({ key, file })
+    const pictureUrl = await sut.upload({ filename, file })
     expect((await axios.get(pictureUrl)).status).toBe(200)
-    await sut.delete({ key })
+    await sut.delete({ filename })
     await expect(axios.get(pictureUrl)).rejects.toThrow()
   })
 })

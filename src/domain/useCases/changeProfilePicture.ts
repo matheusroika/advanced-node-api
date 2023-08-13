@@ -3,6 +3,7 @@ import type { DeleteFile, UploadFile } from '@/domain/contracts/gateways'
 import type { UUIDGenerator } from '@/domain/contracts/crypto'
 import type { LoadUserProfile, SaveUserPicture } from '@/domain/contracts/repositories'
 import { UserProfile } from '@/domain/entities'
+import { AllowedExtensions } from '@/application/validation'
 
 export class ChangeProfilePictureUseCase implements ChangeProfilePicture {
   constructor (
@@ -14,9 +15,10 @@ export class ChangeProfilePictureUseCase implements ChangeProfilePicture {
   async change ({ userId, file }: ChangeProfilePicture.Params): Promise<ChangeProfilePicture.Result> {
     let pictureUrl: string | undefined
     let name: string | undefined
-    const key = this.crypto.uuid({ key: userId })
+
     if (file) {
-      pictureUrl = await this.fileStorage.upload({ file, key })
+      const filename = this.getFilename(userId, file.mimeType)
+      pictureUrl = await this.fileStorage.upload({ file: file.buffer, filename })
     } else {
       name = (await this.userProfileRepository.load({ id: userId }))?.name
     }
@@ -25,9 +27,19 @@ export class ChangeProfilePictureUseCase implements ChangeProfilePicture {
     try {
       await this.userProfileRepository.savePicture(userProfile)
     } catch (error) {
-      if (file) await this.fileStorage.delete({ key })
+      if (file) {
+        const filename = this.getFilename(userId, file.mimeType)
+        await this.fileStorage.delete({ filename })
+      }
       throw error
     }
     return userProfile
+  }
+
+  private getFilename (userId: string, mimeType: string): string {
+    const key = this.crypto.uuid({ key: userId })
+    const indexOfExtension = Object.values(AllowedExtensions).indexOf(mimeType as AllowedExtensions) // Get index of mimeType based on enum value
+    const extension = indexOfExtension === -1 ? 'png' : Object.keys(AllowedExtensions)[indexOfExtension] // If mimeType is not on Allowed list, default is png
+    return `${key}.${extension}`
   }
 }
