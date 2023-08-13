@@ -7,26 +7,26 @@ import type { DataSource } from 'typeorm'
 import type { IBackup, IMemoryDb } from 'pg-mem'
 
 describe('User Routes', () => {
+  let db: IMemoryDb
+  let dataSource: DataSource
+  let backup: IBackup
+
+  beforeAll(async () => {
+    const mockedDb = await mockDb([PostgresUser])
+    db = mockedDb.db
+    dataSource = mockedDb.dataSource
+    backup = db.backup()
+  })
+
+  afterAll(async () => {
+    await dataSource.destroy()
+  })
+
+  afterEach(() => {
+    backup.restore()
+  })
+
   describe('DELETE /user/picture', () => {
-    let db: IMemoryDb
-    let dataSource: DataSource
-    let backup: IBackup
-
-    beforeAll(async () => {
-      const mockedDb = await mockDb([PostgresUser])
-      db = mockedDb.db
-      dataSource = mockedDb.dataSource
-      backup = db.backup()
-    })
-
-    afterAll(async () => {
-      await dataSource.destroy()
-    })
-
-    afterEach(() => {
-      backup.restore()
-    })
-
     test('Should return 403 if no Authorization header is present', async () => {
       const { status } = await request(app)
         .delete('/api/user/picture')
@@ -51,6 +51,14 @@ describe('User Routes', () => {
         .set({ authorization })
       expect(status).toBe(200)
       expect(body).toEqual({ initials: 'AN' })
+    })
+  })
+
+  describe('PUT /user/picture', () => {
+    test('Should return 403 if no Authorization header is present', async () => {
+      const { status } = await request(app)
+        .put('/api/user/picture')
+      expect(status).toBe(403)
     })
   })
 })
