@@ -1,5 +1,6 @@
 export * from './controllers/facebookLoginControllerFactory'
 export * from './controllers/deleteProfilePictureControllerFactory'
+export * from './controllers/saveProfilePictureControllerFactory'
 export * from './middlewares/authenticationMiddlewareFactory'
 export * from './useCases/facebookAuthenticationUseCaseFactory'
 export * from './useCases/changeProfilePictureUseCaseFactory'
