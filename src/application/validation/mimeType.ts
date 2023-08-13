@@ -1,7 +1,7 @@
 import { InvalidMimeTypeError } from '@/application/errors'
 import type { Validator } from '.'
 
-enum AllowedExtensions {
+export enum AllowedExtensions {
   png = 'image/png',
   jpg = 'image/jpeg',
   jpeg = 'image/jpeg'
@@ -14,8 +14,10 @@ export class MimeTypeValidator implements Validator {
   ) {}
 
   validate (): Error | undefined {
+    let isValid = false
     for (const extension of this.allowed) {
-      if (AllowedExtensions[extension] !== this.mimeType) return new InvalidMimeTypeError(this.allowed)
+      if (AllowedExtensions[extension] === this.mimeType) isValid = true
     }
+    if (!isValid) return new InvalidMimeTypeError(this.allowed)
   }
 }

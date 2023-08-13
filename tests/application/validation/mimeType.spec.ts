@@ -9,19 +9,19 @@ describe('Mime Type Validator', () => {
   })
 
   test('Should return undefined if value is valid', () => {
-    const sut = new MimeTypeValidator(['png'], 'image/png')
+    const sut = new MimeTypeValidator(['jpeg', 'jpg', 'png'], 'image/png')
     const error = sut.validate()
     expect(error).toBeUndefined()
   })
 
   test('Should return undefined if value is valid', () => {
-    const sut = new MimeTypeValidator(['jpg'], 'image/jpeg')
+    const sut = new MimeTypeValidator(['jpeg', 'jpg', 'png'], 'image/jpeg')
     const error = sut.validate()
     expect(error).toBeUndefined()
   })
 
   test('Should return undefined if value is valid', () => {
-    const sut = new MimeTypeValidator(['jpeg'], 'image/jpeg')
+    const sut = new MimeTypeValidator(['jpeg', 'jpg', 'png'], 'image/jpeg')
     const error = sut.validate()
     expect(error).toBeUndefined()
   })
