@@ -16,7 +16,7 @@
     "test:aws-s3": "yarn test -c ./jest.integration.config.js ./tests/external/awsS3FileStorage.test.ts"
   },
   "name": "advanced-node-api",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "main": "index.js",
   "author": "Matheus Roika <matheusroika@hotmail.com>",
   "license": "MIT",
